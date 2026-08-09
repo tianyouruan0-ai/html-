@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>动态登录页面</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* ============ 全局重置 ============ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* ============ 登录容器 ============ */
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px 35px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        .login-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.35);
+        }
+
+        /* ============ 标题 ============ */
+        .login-container h2 {
+            text-align: center;
+            color: #333;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+            position: relative;
+        }
+
+        .login-container h2::after {
+            content: '';
+            display: block;
+            width: 50px;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            margin: 10px auto 0;
+            border-radius: 2px;
+        }
+
+        /* ============ 表单组 ============ */
+        .input-group {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .input-group label {
+            display: block;
+            color: #555;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 40px 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 15px;
+            color: #333;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .input-group input:focus {
+            border-color: #667eea;
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+        }
+
+        .input-group input::placeholder {
+            color: #aaa;
+            font-size: 14px;
+        }
+
+        /* ============ 密码切换按钮 ============ */
+        .toggle-pwd {
+            position: absolute;
+            right: 15px;
+            bottom: 12px;
+            cursor: pointer;
+            font-size: 20px;
+            user-select: none;
+            opacity: 0.6;
+            transition: all 0.2s ease;
+            background: none;
+            border: none;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .toggle-pwd:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        /* ============ 记住我选项 ============ */
+        .remember-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 8px 0 20px;
+            padding: 0 2px;
+        }
+
+        .remember-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            user-select: none;
+            transition: color 0.2s ease;
+        }
+
+        .remember-label:hover {
+            color: #333;
+        }
+
+        .remember-checkbox {
+            width: 18px;
+            height: 18px;
+            margin-right: 8px;
+            cursor: pointer;
+            accent-color: #667eea;
+            transition: all 0.2s ease;
+        }
+
+        .remember-checkbox:hover {
+            transform: scale(1.1);
+        }
+
+        .remember-text {
+            font-weight: 500;
+        }
+
+        .forgot-link {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border-bottom: 2px solid transparent;
+        }
+
+        .forgot-link:hover {
+            color: #5a6fd6;
+            border-bottom-color: #667eea;
+        }
+
+        /* ============ 登录按钮 ============ */
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* ============ 消息提示 ============ */
+        #loginMessage {
+            margin-top: 18px;
+            text-align: center;
+            font-size: 14px;
+            min-height: 24px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        #loginMessage.success {
+            color: #28a745;
+        }
+
+        #loginMessage.error {
+            color: #dc3545;
+        }
+
+        #loginMessage.info {
+            color: #17a2b8;
+        }
+
+        /* ============ 弹窗样式 ============ */
+        .dialog-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(4px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.35s ease;
+        }
+
+        .dialog-overlay.dialog-show {
+            opacity: 1;
+        }
+
+        .dialog-overlay.dialog-hide {
+            opacity: 0;
+        }
+
+        .dialog-content {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 35px 40px 30px;
+            min-width: 320px;
+            max-width: 420px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4);
+            transform: scale(0.85) translateY(20px);
+            transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .dialog-overlay.dialog-show .dialog-content {
+            transform: scale(1) translateY(0);
+        }
+
+        .dialog-overlay.dialog-hide .dialog-content {
+            transform: scale(0.85) translateY(20px);
+        }
+
+        .dialog-close {
+            position: absolute;
+            top: 12px;
+            right: 18px;
+            font-size: 30px;
+            cursor: pointer;
+            color: #bbb;
+            transition: all 0.2s ease;
+            line-height: 1;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+
+        .dialog-close:hover {
+            color: #333;
+            transform: rotate(90deg);
+        }
+
+        .dialog-icon {
+            font-size: 56px;
+            margin-bottom: 12px;
+        }
+
+        .dialog-text {
+            font-size: 16px;
+            color: #333;
+            margin: 10px 0 25px;
+            line-height: 1.7;
+            font-weight: 500;
+        }
+
+        .dialog-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            border: none;
+            padding: 12px 45px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+        }
+
+        .dialog-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .dialog-btn:active {
+            transform: translateY(0);
+        }
+
+        /* ============ 按钮加载状态 ============ */
+        .login-btn.loading {
+            background: linear-gradient(135deg, #8a9ae8 0%, #9b7ab8 100%);
+            cursor: wait;
+        }
+
+        .login-btn.success {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+        }
+
+        /* ============ 动画 ============ */
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* ============ 响应式设计 ============ */
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 30px 20px;
+                border-radius: 16px;
+            }
+
+            .login-container h2 {
+                font-size: 24px;
+            }
+
+            .login-btn {
+                font-size: 16px;
+                padding: 12px;
+            }
+
+            .input-group input {
+                padding: 11px 35px 11px 12px;
+                font-size: 14px;
+            }
+
+            .dialog-content {
+                min-width: auto;
+                width: 90%;
+                padding: 28px 20px 25px;
+            }
+
+            .dialog-text {
+                font-size: 15px;
+            }
+
+            .remember-group {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+                margin: 5px 0 15px;
+            }
+
+            .remember-label {
+                font-size: 13px;
+            }
+
+            .forgot-link {
+                font-size: 13px;
+                margin-left: 26px;
+            }
+
+            .remember-checkbox {
+                width: 16px;
+                height: 16px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .login-container {
+                padding: 20px 15px;
+            }
+
+            .login-container h2 {
+                font-size: 20px;
+            }
+
+            .toggle-pwd {
+                right: 12px;
+                font-size: 18px;
+            }
+        }
+
+        /* ============ 输入框自动填充样式 ============ */
+        .input-group input:-webkit-autofill {
+            -webkit-box-shadow: 0 0 0 30px #f8f9fa inset !important;
+            -webkit-text-fill-color: #333 !important;
+        }
+
+        .input-group input:-webkit-autofill:focus {
+            -webkit-box-shadow: 0 0 0 30px #fff inset !important;
+        }
+
+        /* ============ 滚动条美化 ============ */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #5a6fd6, #6a3f8f);
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <form id="loginForm">
+            <h2>登录</h2>
+
+            <div class="input-group">
+                <label for="username">用户名</label>
+                <input type="text" id="username" name="username"
+                       autocomplete="username" placeholder="请输入用户名" required>
+            </div>
+
+            <div class="input-group">
+                <label for="password">密码</label>
+                <input type="password" id="password" name="password"
+                       autocomplete="current-password" placeholder="请输入密码" required>
+                <span class="toggle-pwd" id="togglePwd">👁️</span>
+            </div>
+
+            <!-- 记住我选项 -->
+            <div class="remember-group">
+                <label class="remember-label">
+                    <input type="checkbox" id="rememberMe" class="remember-checkbox">
+                    <span class="remember-text">记住我</span>
+                </label>
+                <a href="#" class="forgot-link">忘记密码？</a>
+            </div>
+
+            <button type="submit" class="login-btn">登录</button>
+            <div id="loginMessage"></div>
+        </form>
+    </div>
+
+    <script>
+        // 动态登录页面 JS - 修复版 + 自动登录
+        (function() {
+            'use strict';
+
+            // DOM 元素引用
+            const loginForm = document.getElementById('loginForm');
+            const loginMessage = document.getElementById('loginMessage');
+            const togglePwd = document.getElementById('togglePwd');
+            const passwordInput = document.getElementById('password');
+            const loginBtn = loginForm.querySelector('.login-btn');
+            const rememberMeCheckbox = document.getElementById('rememberMe');
+
+            // 配置
+            const CONFIG = {
+                redirectUrl: 'https://zhuanlan.zhihu.com/p/105769215',
+                redirectDelay: 1500,
+                validUsername: 'ruan',
+                validPassword: 'ruan19941009',
+                storageKey: 'login_remember'
+            };
+
+            // ============ 工具函数 ============
+
+            function showErrorDialog(msg) {
+                const oldDialog = document.getElementById('customErrorDialog');
+                if (oldDialog) {
+                    oldDialog.remove();
+                }
+
+                const dialog = document.createElement('div');
+                dialog.id = 'customErrorDialog';
+                dialog.className = 'dialog-overlay';
+                dialog.innerHTML = `
+                    <div class="dialog-content">
+                        <span class="dialog-close" id="dialogCloseBtn">&times;</span>
+                        <div class="dialog-icon">❌</div>
+                        <div class="dialog-text">${msg}</div>
+                        <button id="dialogOkBtn" class="dialog-btn">确定</button>
+                    </div>
+                `;
+
+                document.body.appendChild(dialog);
+
+                setTimeout(() => {
+                    dialog.classList.add('dialog-show');
+                }, 10);
+
+                function closeDialog() {
+                    dialog.classList.remove('dialog-show');
+                    dialog.classList.add('dialog-hide');
+                    setTimeout(() => {
+                        if (dialog.parentNode) {
+                            dialog.remove();
+                        }
+                    }, 300);
+                }
+
+                document.getElementById('dialogCloseBtn').onclick = closeDialog;
+                document.getElementById('dialogOkBtn').onclick = closeDialog;
+
+                dialog.onclick = function(e) {
+                    if (e.target === this) {
+                        closeDialog();
+                    }
+                };
+
+                document.addEventListener('keydown', function escHandler(e) {
+                    if (e.key === 'Escape') {
+                        closeDialog();
+                        document.removeEventListener('keydown', escHandler);
+                    }
+                });
+            }
+
+            function setMessage(msg, type) {
+                loginMessage.textContent = msg;
+                loginMessage.className = type || '';
+            }
+
+            function resetLoginButton() {
+                loginBtn.textContent = '登录';
+                loginBtn.disabled = false;
+                loginBtn.classList.remove('loading', 'success');
+            }
+
+            function setLoginButtonLoading() {
+                loginBtn.textContent = '验证中...';
+                loginBtn.disabled = true;
+                loginBtn.classList.add('loading');
+            }
+
+            function setLoginButtonSuccess() {
+                loginBtn.textContent = '✅ 登录成功';
+                loginBtn.disabled = true;
+                loginBtn.classList.add('success');
+            }
+
+            // ============ 记住我功能 ============
+
+            function saveRememberMe(username, password, remember) {
+                if (remember) {
+                    const data = {
+                        username: username,
+                        password: password,
+                        timestamp: Date.now()
+                    };
+                    localStorage.setItem(CONFIG.storageKey, JSON.stringify(data));
+                } else {
+                    localStorage.removeItem(CONFIG.storageKey);
+                }
+            }
+
+            function loadRememberMe() {
+                try {
+                    const data = localStorage.getItem(CONFIG.storageKey);
+                    if (data) {
+                        const parsed = JSON.parse(data);
+                        const sevenDays = 7 * 24 * 60 * 60 * 1000;
+                        if (Date.now() - parsed.timestamp < sevenDays) {
+                            return parsed;
+                        } else {
+                            localStorage.removeItem(CONFIG.storageKey);
+                            return null;
+                        }
+                    }
+                } catch (e) {
+                    console.error('读取记住我失败:', e);
+                }
+                return null;
+            }
+
+            function autoFillLogin() {
+                const saved = loadRememberMe();
+                if (saved) {
+                    const usernameInput = document.getElementById('username');
+                    const passwordInput = document.getElementById('password');
+                    const rememberCheckbox = document.getElementById('rememberMe');
+
+                    if (usernameInput) usernameInput.value = saved.username;
+                    if (passwordInput) passwordInput.value = saved.password;
+                    if (rememberCheckbox) rememberCheckbox.checked = true;
+
+                    console.log('🔄 检测到记住的账号，自动登录中...');
+                    setTimeout(() => {
+                        handleLogin(new Event('submit'));
+                    }, 500);
+                }
+            }
+
+            // ============ 核心登录功能 ============
+
+            function mockLogin(username, password) {
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        if (username === CONFIG.validUsername && password === CONFIG.validPassword) {
+                            resolve({
+                                success: true,
+                                message: '登录成功，欢迎 ' + username + '！',
+                                user: { username: username, role: 'admin' }
+                            });
+                        } else {
+                            resolve({
+                                success: false,
+                                message: '用户名或密码错误'
+                            });
+                        }
+                    }, 800);
+                });
+            }
+
+            async function handleLogin(e) {
+                e.preventDefault();
+
+                if (loginBtn.disabled) {
+                    return;
+                }
+
+                const usernameInput = document.getElementById('username');
+                const passwordInput = document.getElementById('password');
+                const rememberCheckbox = document.getElementById('rememberMe');
+
+                const username = usernameInput.value.trim();
+                const password = passwordInput.value;
+
+                if (!username) {
+                    setMessage('请输入用户名', 'error');
+                    showErrorDialog('用户名不能为空');
+                    return;
+                }
+
+                if (!password) {
+                    setMessage('请输入密码', 'error');
+                    showErrorDialog('密码不能为空');
+                    return;
+                }
+
+                setMessage('正在验证...', 'info');
+                setLoginButtonLoading();
+
+                try {
+                    const result = await mockLogin(username, password);
+
+                    if (result.success) {
+                        setMessage(result.message, 'success');
+                        setLoginButtonSuccess();
+
+                        const remember = rememberCheckbox ? rememberCheckbox.checked : false;
+                        saveRememberMe(username, password, remember);
+
+                        if (result.user) {
+                            localStorage.setItem('user', JSON.stringify(result.user));
+                        }
+
+                        setTimeout(() => {
+                            window.location.href = CONFIG.redirectUrl;
+                        }, CONFIG.redirectDelay);
+
+                    } else {
+                        setMessage(result.message, 'error');
+                        resetLoginButton();
+                        showErrorDialog(result.message);
+                    }
+
+                } catch (error) {
+                    console.error('登录错误:', error);
+                    setMessage('登录失败，请重试', 'error');
+                    resetLoginButton();
+                    showErrorDialog('网络异常，请检查连接后重试');
+                }
+            }
+
+            // ============ 事件绑定 ============
+
+            if (togglePwd) {
+                togglePwd.addEventListener('click', function() {
+                    if (passwordInput.type === 'password') {
+                        passwordInput.type = 'text';
+                        togglePwd.textContent = '🙈';
+                        togglePwd.title = '隐藏密码';
+                    } else {
+                        passwordInput.type = 'password';
+                        togglePwd.textContent = '👁️';
+                        togglePwd.title = '显示密码';
+                    }
+                });
+            }
+
+            loginForm.addEventListener('submit', handleLogin);
+
+            document.querySelectorAll('.input-group input').forEach(input => {
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        loginForm.dispatchEvent(new Event('submit'));
+                    }
+                });
+            });
+
+            // ============ 初始化 ============
+
+            document.addEventListener('DOMContentLoaded', function() {
+                const usernameInput = document.getElementById('username');
+                if (usernameInput) {
+                    usernameInput.focus();
+                }
+
+                autoFillLogin();
+
+                console.log('📝 登录页面已加载');
+                console.log('🔑 测试账号:', CONFIG.validUsername);
+                console.log('🔒 测试密码:', CONFIG.validPassword);
+                console.log('🔗 跳转地址:', CONFIG.redirectUrl);
+                console.log('💡 提示: 勾选"记住我"后会自动登录');
+            });
+
+            const userSession = localStorage.getItem('user');
+            if (userSession) {
+                try {
+                    const userData = JSON.parse(userSession);
+                    if (userData.timestamp && Date.now() - userData.timestamp > 30 * 60 * 1000) {
+                        localStorage.removeItem('user');
+                    }
+                } catch (e) {
+                    localStorage.removeItem('user');
+                }
+            }
+
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,368 @@
+/* ============ 全局重置 ============ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    padding: 20px;
+}
+
+/* ============ 登录容器 ============ */
+.login-container {
+    width: 100%;
+    max-width: 420px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 40px 35px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    animation: slideUp 0.6s ease-out;
+}
+
+.login-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.35);
+}
+
+/* ============ 标题 ============ */
+.login-container h2 {
+    text-align: center;
+    color: #333;
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 30px;
+    letter-spacing: 2px;
+    position: relative;
+}
+
+.login-container h2::after {
+    content: '';
+    display: block;
+    width: 50px;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    margin: 10px auto 0;
+    border-radius: 2px;
+}
+
+/* ============ 表单组 ============ */
+.input-group {
+    position: relative;
+    margin-bottom: 25px;
+}
+
+.input-group label {
+    display: block;
+    color: #555;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px 40px 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 15px;
+    color: #333;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.input-group input:focus {
+    border-color: #667eea;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+}
+
+.input-group input::placeholder {
+    color: #aaa;
+    font-size: 14px;
+}
+
+/* ============ 密码切换按钮 ============ */
+.toggle-pwd {
+    position: absolute;
+    right: 15px;
+    bottom: 12px;
+    cursor: pointer;
+    font-size: 20px;
+    user-select: none;
+    opacity: 0.6;
+    transition: all 0.2s ease;
+    background: none;
+    border: none;
+    padding: 0;
+    line-height: 1;
+}
+
+.toggle-pwd:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+/* ============ 登录按钮 ============ */
+.login-btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 1px;
+    margin-top: 10px;
+    position: relative;
+    overflow: hidden;
+}
+
+.login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+}
+
+.login-btn:active {
+    transform: translateY(0);
+}
+
+.login-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* ============ 消息提示 ============ */
+#loginMessage {
+    margin-top: 18px;
+    text-align: center;
+    font-size: 14px;
+    min-height: 24px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+#loginMessage.success {
+    color: #28a745;
+}
+
+#loginMessage.error {
+    color: #dc3545;
+}
+
+#loginMessage.info {
+    color: #17a2b8;
+}
+
+/* ============ 弹窗样式 ============ */
+.dialog-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+}
+
+.dialog-overlay.dialog-show {
+    opacity: 1;
+}
+
+.dialog-overlay.dialog-hide {
+    opacity: 0;
+}
+
+.dialog-content {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 35px 40px 30px;
+    min-width: 320px;
+    max-width: 420px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4);
+    transform: scale(0.85) translateY(20px);
+    transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.dialog-overlay.dialog-show .dialog-content {
+    transform: scale(1) translateY(0);
+}
+
+.dialog-overlay.dialog-hide .dialog-content {
+    transform: scale(0.85) translateY(20px);
+}
+
+.dialog-close {
+    position: absolute;
+    top: 12px;
+    right: 18px;
+    font-size: 30px;
+    cursor: pointer;
+    color: #bbb;
+    transition: all 0.2s ease;
+    line-height: 1;
+    background: none;
+    border: none;
+    padding: 0;
+}
+
+.dialog-close:hover {
+    color: #333;
+    transform: rotate(90deg);
+}
+
+.dialog-icon {
+    font-size: 56px;
+    margin-bottom: 12px;
+}
+
+.dialog-text {
+    font-size: 16px;
+    color: #333;
+    margin: 10px 0 25px;
+    line-height: 1.7;
+    font-weight: 500;
+}
+
+.dialog-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    border: none;
+    padding: 12px 45px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 0.5px;
+}
+
+.dialog-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.dialog-btn:active {
+    transform: translateY(0);
+}
+
+/* ============ 按钮加载状态 ============ */
+.login-btn.loading {
+    background: linear-gradient(135deg, #8a9ae8 0%, #9b7ab8 100%);
+    cursor: wait;
+}
+
+.login-btn.success {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+}
+
+/* ============ 动画 ============ */
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* ============ 响应式设计 ============ */
+@media (max-width: 480px) {
+    .login-container {
+        padding: 30px 20px;
+        border-radius: 16px;
+    }
+
+    .login-container h2 {
+        font-size: 24px;
+    }
+
+    .login-btn {
+        font-size: 16px;
+        padding: 12px;
+    }
+
+    .input-group input {
+        padding: 11px 35px 11px 12px;
+        font-size: 14px;
+    }
+
+    .dialog-content {
+        min-width: auto;
+        width: 90%;
+        padding: 28px 20px 25px;
+    }
+
+    .dialog-text {
+        font-size: 15px;
+    }
+}
+
+@media (max-width: 360px) {
+    .login-container {
+        padding: 20px 15px;
+    }
+
+    .login-container h2 {
+        font-size: 20px;
+    }
+
+    .toggle-pwd {
+        right: 12px;
+        font-size: 18px;
+    }
+}
+
+/* ============ 输入框自动填充样式 ============ */
+.input-group input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 30px #f8f9fa inset !important;
+    -webkit-text-fill-color: #333 !important;
+}
+
+.input-group input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 30px #fff inset !important;
+}
+
+/* ============ 滚动条美化 ============ */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #5a6fd6, #6a3f8f);
+}
