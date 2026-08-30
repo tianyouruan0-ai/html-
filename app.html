@@ -360,9 +360,12 @@
         const USERNAME = currentUser();
 
         // 初始化 Supabase 客户端（SDK 加载失败时自动降级为纯本地模式）
-        let supabase = null;
+        // ⚠️ 变量名不能用 supabase：SDK 自身用 var supabase 注册了全局变量，
+        //    若在此处再用 let/const 声明同名变量会触发
+        //    "Identifier 'supabase' has already been declared" 导致整个脚本失效
+        let sbClient = null;
         if (window.supabase) {
-            try { supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); } catch (e) { supabase = null; }
+            try { sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); } catch (e) { sbClient = null; }
         }
 
         // 同步状态提示（显示在标题下方）
@@ -395,10 +398,10 @@
 
         // ---------- 从云端加载 ----------
         async function loadFromCloud() {
-            if (!supabase) { setSyncStatus('☁️ 云同步未启用，当前为本地模式', false); return; }
+            if (!sbClient) { setSyncStatus('☁️ 云同步未启用，当前为本地模式', false); return; }
             setSyncStatus('☁️ 正在从云端同步...', null);
             try {
-                const { data, error } = await supabase
+                const { data, error } = await sbClient
                     .from('app_tasks')
                     .select('data')
                     .eq('username', USERNAME)
@@ -418,9 +421,9 @@
 
         // ---------- 保存到云端 ----------
         async function saveToCloud() {
-            if (!supabase) return;
+            if (!sbClient) return;
             try {
-                const { error } = await supabase
+                const { error } = await sbClient
                     .from('app_tasks')
                     .upsert({ username: USERNAME, data: tasks });
                 if (error) throw error;
