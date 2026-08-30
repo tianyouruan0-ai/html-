@@ -16,7 +16,7 @@
         }
     ],
     "config": {
-        "redirectUrl": "https://stirring-pastelito-163014.netlify.app/",
+        "redirectUrl": "app.html",
         "redirectDelay": 1500
     }
 }

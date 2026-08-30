@@ -482,6 +482,8 @@
         </form>
     </div>
 
+    <!-- 刷新守卫：登录成功时发放一次性票据 -->
+    <script src="auth-guard.js"></script>
     <script>
         // 动态登录页面 JS - 修复版 + 自动登录
         (function() {
@@ -499,7 +501,7 @@
             // 账号数据不再写死在网页源码里，而是从后端数据文件 users.json 读取
             // （部署到公网后自动读取该文件；本地双击直接打开时若读取失败，回退到内置默认账号）
             const CONFIG = {
-                redirectUrl: 'https://stirring-pastelito-163014.netlify.app/',  // 默认跳转地址（可被 users.json 覆盖）
+                redirectUrl: 'app.html',  // 登录成功后跳转到受保护的任务管理页 app.html（可被 users.json 覆盖）
                 redirectDelay: 1500,
                 storageKey: 'login_remember',
                 dataFile: 'backend/users.json'
@@ -728,6 +730,12 @@
 
                         if (result.user) {
                             localStorage.setItem('user', JSON.stringify(result.user));
+                        }
+
+                        // 发放一次性登录票据：app.html 会校验并消费它，
+                        // 刷新目标页后票据已失效，必须回到这里重新登录
+                        if (window.WBAuth) {
+                            WBAuth.grant();
                         }
 
                         setTimeout(() => {
