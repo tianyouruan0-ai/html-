@@ -1,0 +1,22 @@
+{
+    "_说明": "后端数据文件：登录账号与站点配置（部署到公网后，登录页会自动读取此文件校验登录）",
+    "_注意": "修改本文件后无需改动网页代码，刷新登录页即生效；新增账号直接在 users 数组里照格式添加即可",
+    "users": [
+        {
+            "username": "ruan",
+            "password": "ruan19941009",
+            "role": "admin",
+            "remark": "默认管理员账号"
+        },
+        {
+            "username": "user",
+            "password": "123456",
+            "role": "user",
+            "remark": "演示普通账号"
+        }
+    ],
+    "config": {
+        "redirectUrl": "https://stirring-pastelito-163014.netlify.app/",
+        "redirectDelay": 1500
+    }
+}
