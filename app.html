@@ -10,6 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>极简任务管理器</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -340,16 +341,96 @@
         const addTaskBtn = document.getElementById('addTaskBtn');
         const tasksContainer = document.getElementById('tasksContainer');
         const fireworksContainer = document.getElementById('fireworksContainer');
-        
-        // 任务数组
-        let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-        
+
+        // ============================================================
+        // 云端同步配置（Supabase，与新登录工作台同一个项目）
+        // 数据按登录账号关联：手机 / 电脑 / 任何浏览器登录同一账号
+        // → 看到的都是同一份任务列表
+        // ============================================================
+        const SUPABASE_URL = 'https://oidrtpdaplsnctxkeml.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_mMVkOepMV1Nydv-QJSknqA_f_vq18yGS';
+
+        // 当前登录账号（登录页登录成功后写入 localStorage.user）
+        function currentUser() {
+            try {
+                const u = JSON.parse(localStorage.getItem('user'));
+                return (u && u.username) ? u.username : 'guest';
+            } catch (e) { return 'guest'; }
+        }
+        const USERNAME = currentUser();
+
+        // 初始化 Supabase 客户端（SDK 加载失败时自动降级为纯本地模式）
+        let supabase = null;
+        if (window.supabase) {
+            try { supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); } catch (e) { supabase = null; }
+        }
+
+        // 同步状态提示（显示在标题下方）
+        function setSyncStatus(text, ok) {
+            let el = document.getElementById('syncStatus');
+            if (!el) {
+                el = document.createElement('div');
+                el.id = 'syncStatus';
+                el.style.cssText = 'text-align:center;font-size:12px;color:#9ca3af;margin-top:6px;';
+                const header = document.querySelector('header');
+                if (header) header.appendChild(el);
+            }
+            el.textContent = text;
+            el.style.color = (ok === true) ? '#10b981' : (ok === false) ? '#ef4444' : '#9ca3af';
+        }
+
+        // 任务数组：先用本机缓存快速显示，随后从云端拉取覆盖
+        let tasks = JSON.parse(localStorage.getItem('tasks_' + USERNAME));
+        if (tasks === null) {
+            // 兼容旧版本：首次使用云同步时迁移旧数据
+            tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+        }
+
         // 初始化
-        function init() {
+        async function init() {
             renderTasks();
             addEventListeners();
+            await loadFromCloud();
         }
-        
+
+        // ---------- 从云端加载 ----------
+        async function loadFromCloud() {
+            if (!supabase) { setSyncStatus('☁️ 云同步未启用，当前为本地模式', false); return; }
+            setSyncStatus('☁️ 正在从云端同步...', null);
+            try {
+                const { data, error } = await supabase
+                    .from('app_tasks')
+                    .select('data')
+                    .eq('username', USERNAME)
+                    .maybeSingle();
+                if (error) throw error;
+                if (data && Array.isArray(data.data)) {
+                    tasks = data.data;
+                    localStorage.setItem('tasks_' + USERNAME, JSON.stringify(tasks));
+                    renderTasks();
+                }
+                setSyncStatus('☁️ 云同步已开启 · 账号 ' + USERNAME, true);
+            } catch (e) {
+                console.warn('云端加载失败：', e.message);
+                setSyncStatus('⚠️ 云端连接失败，当前显示本机数据', false);
+            }
+        }
+
+        // ---------- 保存到云端 ----------
+        async function saveToCloud() {
+            if (!supabase) return;
+            try {
+                const { error } = await supabase
+                    .from('app_tasks')
+                    .upsert({ username: USERNAME, data: tasks });
+                if (error) throw error;
+                setSyncStatus('☁️ 云同步已开启 · 账号 ' + USERNAME, true);
+            } catch (e) {
+                console.warn('云端保存失败：', e.message);
+                setSyncStatus('⚠️ 云端保存失败，改动暂只保存在本机', false);
+            }
+        }
+
         // 添加事件监听
         function addEventListeners() {
             addTaskBtn.addEventListener('click', addTask);
@@ -382,9 +463,10 @@
             animateTaskAddition();
         }
         
-        // 保存任务到本地存储
+        // 保存任务：写本机缓存 + 云端同步（其他设备登录后即可看到）
         function saveTasks() {
-            localStorage.setItem('tasks', JSON.stringify(tasks));
+            localStorage.setItem('tasks_' + USERNAME, JSON.stringify(tasks));
+            saveToCloud();
         }
         
         // 渲染任务列表
