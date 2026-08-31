@@ -10,7 +10,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>极简任务管理器</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -18,7 +17,7 @@
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
+
         body {
             background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
             background-size: 400% 400%;
@@ -28,19 +27,19 @@
             padding: 20px;
             overflow-x: hidden;
         }
-        
+
         @keyframes gradientBG {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
-        
+
         .container {
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
         }
-        
+
         header {
             text-align: center;
             margin-bottom: 40px;
@@ -51,7 +50,7 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
-        
+
         h1 {
             font-size: 2.8rem;
             margin-bottom: 10px;
@@ -61,20 +60,20 @@
             background-clip: text;
             color: transparent;
         }
-        
+
         .subtitle {
             font-size: 1.2rem;
             opacity: 0.8;
             font-weight: 300;
         }
-        
+
         .input-section {
             display: flex;
             gap: 15px;
             margin-bottom: 30px;
             flex-wrap: wrap;
         }
-        
+
         .task-input {
             flex: 1;
             min-width: 250px;
@@ -88,13 +87,13 @@
             box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
             transition: all 0.3s ease;
         }
-        
+
         .task-input:focus {
             outline: none;
             background: rgba(255, 255, 255, 0.15);
             box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.3), 0 0 15px rgba(255, 255, 255, 0.1);
         }
-        
+
         .add-btn {
             padding: 15px 30px;
             background: linear-gradient(45deg, #ff7e5f, #feb47b);
@@ -107,22 +106,22 @@
             transition: all 0.3s ease;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
-        
+
         .add-btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
         }
-        
+
         .add-btn:active {
             transform: translateY(1px);
         }
-        
+
         .tasks-container {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 20px;
         }
-        
+
         .task-card {
             background: rgba(255, 255, 255, 0.1);
             border-radius: 15px;
@@ -134,20 +133,20 @@
             position: relative;
             overflow: hidden;
         }
-        
+
         .task-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
             background: rgba(255, 255, 255, 0.15);
         }
-        
+
         .task-content {
             font-size: 1.2rem;
             margin-bottom: 15px;
             min-height: 80px;
             word-break: break-word;
         }
-        
+
         .task-time {
             font-size: 0.85rem;
             opacity: 0.7;
@@ -156,13 +155,13 @@
             align-items: center;
             gap: 5px;
         }
-        
+
         .task-actions {
             display: flex;
             gap: 10px;
             margin-top: 10px;
         }
-        
+
         .action-btn {
             flex: 1;
             padding: 10px;
@@ -176,47 +175,47 @@
             justify-content: center;
             gap: 5px;
         }
-        
+
         .edit-btn {
             background: rgba(74, 144, 226, 0.3);
             color: #4a90e2;
         }
-        
+
         .edit-btn:hover {
             background: rgba(74, 144, 226, 0.4);
         }
-        
+
         .delete-btn {
             background: rgba(226, 74, 74, 0.3);
             color: #e24a4a;
         }
-        
+
         .delete-btn:hover {
             background: rgba(226, 74, 74, 0.4);
         }
-        
+
         .complete-btn {
             background: rgba(74, 226, 122, 0.3);
             color: #4ae27a;
         }
-        
+
         .complete-btn:hover {
             background: rgba(74, 226, 122, 0.4);
         }
-        
+
         .empty-state {
             text-align: center;
             padding: 40px;
             grid-column: 1 / -1;
             opacity: 0.7;
         }
-        
+
         .empty-state i {
             font-size: 4rem;
             margin-bottom: 20px;
             opacity: 0.3;
         }
-        
+
         /* 烟花效果容器 */
         .fireworks-container {
             position: fixed;
@@ -227,7 +226,7 @@
             pointer-events: none;
             z-index: 1000;
         }
-        
+
         /* 单个烟花粒子 */
         .firework {
             position: absolute;
@@ -236,7 +235,7 @@
             border-radius: 50%;
             animation: firework 1s forwards;
         }
-        
+
         @keyframes firework {
             0% {
                 transform: translate(0, 0);
@@ -247,12 +246,12 @@
                 opacity: 0;
             }
         }
-        
+
         /* 编辑状态 */
         .edit-mode {
             background: rgba(255, 255, 255, 0.15);
         }
-        
+
         .edit-input {
             width: 100%;
             padding: 10px;
@@ -263,7 +262,7 @@
             font-size: 1.1rem;
             margin-bottom: 15px;
         }
-        
+
         .save-btn {
             background: rgba(74, 226, 122, 0.3);
             color: #4ae27a;
@@ -274,20 +273,20 @@
             font-weight: 600;
             transition: all 0.2s ease;
         }
-        
+
         .save-btn:hover {
             background: rgba(74, 226, 122, 0.4);
         }
-        
+
         @media (max-width: 600px) {
             .input-section {
                 flex-direction: column;
             }
-            
+
             .add-btn {
                 width: 100%;
             }
-            
+
             h1 {
                 font-size: 2.2rem;
             }
@@ -299,8 +298,6 @@
     <script src="auth-guard.js"></script>
     <script>
     (function() {
-        // 校验一次性登录票据：只有刚从登录页（index.html）登录跳转过来才放行；
-        // 刷新本页 / 直接输入网址打开 → 一律送回登录页，必须重新登录
         if (!window.WBAuth || !WBAuth.verify()) {
             window.location.replace('index.html');
         }
@@ -311,19 +308,19 @@
             <h1>极简任务管理器</h1>
             <div class="subtitle">记录你的每一个任务与灵感</div>
         </header>
-        
+
         <div class="input-section">
-            <input 
-                type="text" 
-                class="task-input" 
-                id="taskInput" 
+            <input
+                type="text"
+                class="task-input"
+                id="taskInput"
                 placeholder="输入任务内容..."
             >
             <button class="add-btn" id="addTaskBtn">
                 <i class="fas fa-plus"></i> 添加任务
             </button>
         </div>
-        
+
         <div class="tasks-container" id="tasksContainer">
             <div class="empty-state">
                 <i class="fas fa-tasks"></i>
@@ -332,7 +329,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="fireworks-container" id="fireworksContainer"></div>
 
     <script>
@@ -343,14 +340,8 @@
         const fireworksContainer = document.getElementById('fireworksContainer');
 
         // ============================================================
-        // 云端同步配置（Supabase，与新登录工作台同一个项目）
-        // 数据按登录账号关联：手机 / 电脑 / 任何浏览器登录同一账号
-        // → 看到的都是同一份任务列表
+        // 本地稳定存储方案（彻底移除外网同步报错）
         // ============================================================
-        const SUPABASE_URL = 'https://oidrtpdaplsnctxkeml.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_mMVkOepMV1Nydv-QJSknqA_f_vq18yGS';
-
-        // 当前登录账号（登录页登录成功后写入 localStorage.user）
         function currentUser() {
             try {
                 const u = JSON.parse(localStorage.getItem('user'));
@@ -359,16 +350,7 @@
         }
         const USERNAME = currentUser();
 
-        // 初始化 Supabase 客户端（SDK 加载失败时自动降级为纯本地模式）
-        // ⚠️ 变量名不能用 supabase：SDK 自身用 var supabase 注册了全局变量，
-        //    若在此处再用 let/const 声明同名变量会触发
-        //    "Identifier 'supabase' has already been declared" 导致整个脚本失效
-        let sbClient = null;
-        if (window.supabase) {
-            try { sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); } catch (e) { sbClient = null; }
-        }
-
-        // 同步状态提示（显示在标题下方）
+        // 状态提示（显示在标题下方）
         function setSyncStatus(text, ok) {
             let el = document.getElementById('syncStatus');
             if (!el) {
@@ -379,13 +361,12 @@
                 if (header) header.appendChild(el);
             }
             el.textContent = text;
-            el.style.color = (ok === true) ? '#10b981' : (ok === false) ? '#ef4444' : '#9ca3af';
+            el.style.color = (ok === true) ? '#10b981' : '#ef4444';
         }
 
-        // 任务数组：先用本机缓存快速显示，随后从云端拉取覆盖
+        // 任务数组：从本机缓存安全加载
         let tasks = JSON.parse(localStorage.getItem('tasks_' + USERNAME));
         if (tasks === null) {
-            // 兼容旧版本：首次使用云同步时迁移旧数据
             tasks = JSON.parse(localStorage.getItem('tasks')) || [];
         }
 
@@ -393,45 +374,7 @@
         async function init() {
             renderTasks();
             addEventListeners();
-            await loadFromCloud();
-        }
-
-        // ---------- 从云端加载 ----------
-        async function loadFromCloud() {
-            if (!sbClient) { setSyncStatus('☁️ 云同步未启用，当前为本地模式', false); return; }
-            setSyncStatus('☁️ 正在从云端同步...', null);
-            try {
-                const { data, error } = await sbClient
-                    .from('app_tasks')
-                    .select('data')
-                    .eq('username', USERNAME)
-                    .maybeSingle();
-                if (error) throw error;
-                if (data && Array.isArray(data.data)) {
-                    tasks = data.data;
-                    localStorage.setItem('tasks_' + USERNAME, JSON.stringify(tasks));
-                    renderTasks();
-                }
-                setSyncStatus('☁️ 云同步已开启 · 账号 ' + USERNAME, true);
-            } catch (e) {
-                console.warn('云端加载失败：', e.message);
-                setSyncStatus('⚠️ 云端连接失败，当前显示本机数据', false);
-            }
-        }
-
-        // ---------- 保存到云端 ----------
-        async function saveToCloud() {
-            if (!sbClient) return;
-            try {
-                const { error } = await sbClient
-                    .from('app_tasks')
-                    .upsert({ username: USERNAME, data: tasks });
-                if (error) throw error;
-                setSyncStatus('☁️ 云同步已开启 · 账号 ' + USERNAME, true);
-            } catch (e) {
-                console.warn('云端保存失败：', e.message);
-                setSyncStatus('⚠️ 云端保存失败，改动暂只保存在本机', false);
-            }
+            setSyncStatus('💻 本地存储模式已就绪 · 账号 ' + USERNAME, true);
         }
 
         // 添加事件监听
@@ -441,37 +384,36 @@
                 if (e.key === 'Enter') addTask();
             });
         }
-        
+
         // 添加新任务
         function addTask() {
             const content = taskInput.value.trim();
             if (!content) return;
-            
+
             const newTask = {
                 id: Date.now(),
                 content: content,
                 timestamp: new Date().toLocaleString(),
                 completed: false
             };
-            
+
             tasks.unshift(newTask);
             saveTasks();
             renderTasks();
-            
+
             // 清空输入框
             taskInput.value = '';
             taskInput.focus();
-            
+
             // 添加动画效果
             animateTaskAddition();
         }
-        
-        // 保存任务：写本机缓存 + 云端同步（其他设备登录后即可看到）
+
+        // 保存任务到本地缓存
         function saveTasks() {
             localStorage.setItem('tasks_' + USERNAME, JSON.stringify(tasks));
-            saveToCloud();
         }
-        
+
         // 渲染任务列表
         function renderTasks() {
             if (tasks.length === 0) {
@@ -484,14 +426,14 @@
                 `;
                 return;
             }
-            
+
             tasksContainer.innerHTML = '';
-            
+
             tasks.forEach(task => {
                 const taskElement = document.createElement('div');
                 taskElement.className = 'task-card';
                 taskElement.dataset.id = task.id;
-                
+
                 taskElement.innerHTML = `
                     <div class="task-content">${task.content}</div>
                     <div class="task-time">
@@ -510,28 +452,28 @@
                         </button>
                     </div>
                 `;
-                
+
                 tasksContainer.appendChild(taskElement);
-                
+
                 // 添加任务卡片的事件监听
                 const editBtn = taskElement.querySelector('.edit-btn');
                 const deleteBtn = taskElement.querySelector('.delete-btn');
                 const completeBtn = taskElement.querySelector('.complete-btn');
-                
+
                 editBtn.addEventListener('click', () => editTask(task.id));
                 deleteBtn.addEventListener('click', () => deleteTask(task.id));
                 completeBtn.addEventListener('click', () => completeTask(task.id));
             });
         }
-        
+
         // 编辑任务
         function editTask(taskId) {
             const task = tasks.find(t => t.id == taskId);
             if (!task) return;
-            
+
             const taskElement = document.querySelector(`.task-card[data-id="${taskId}"]`);
             taskElement.classList.add('edit-mode');
-            
+
             taskElement.innerHTML = `
                 <textarea class="edit-input" id="editInput">${task.content}</textarea>
                 <div class="task-time">
@@ -544,10 +486,10 @@
                     </button>
                 </div>
             `;
-            
+
             const saveBtn = taskElement.querySelector('#saveEditBtn');
             const editInput = taskElement.querySelector('#editInput');
-            
+
             saveBtn.addEventListener('click', () => {
                 const newContent = editInput.value.trim();
                 if (newContent) {
@@ -557,7 +499,7 @@
                     renderTasks();
                 }
             });
-            
+
             // 允许按回车保存
             editInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
@@ -565,84 +507,77 @@
                     saveBtn.click();
                 }
             });
-            
+
             // 自动聚焦并选中所有文本
             editInput.focus();
             editInput.select();
         }
-        
+
         // 删除任务
         function deleteTask(taskId) {
             tasks = tasks.filter(task => task.id != taskId);
             saveTasks();
             renderTasks();
         }
-        
+
         // 完成任务
         function completeTask(taskId) {
             const taskIndex = tasks.findIndex(task => task.id == taskId);
             if (taskIndex === -1) return;
-            
+
             // 创建烟花效果
             createFireworks();
-            
+
             // 移除任务
             tasks.splice(taskIndex, 1);
             saveTasks();
-            
+
             // 延迟渲染让用户看到烟花效果
             setTimeout(() => {
                 renderTasks();
             }, 1000);
         }
-        
+
         // 创建烟花效果
         function createFireworks() {
-            // 清除现有烟花
             fireworksContainer.innerHTML = '';
-            
-            // 创建多个烟花粒子
+
             for (let i = 0; i < 150; i++) {
                 const firework = document.createElement('div');
                 firework.className = 'firework';
-                
-                // 随机颜色
+
                 const colors = ['#FF5252', '#FFD740', '#40C4FF', '#69F0AE', '#FF4081'];
                 firework.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                
-                // 随机位置和动画
+
                 const angle = Math.random() * Math.PI * 2;
                 const distance = 100 + Math.random() * 200;
                 const x = Math.cos(angle) * distance;
                 const y = Math.sin(angle) * distance;
-                
+
                 firework.style.setProperty('--x', `${x}px`);
                 firework.style.setProperty('--y', `${y}px`);
-                
-                // 随机大小
+
                 const size = 2 + Math.random() * 8;
                 firework.style.width = `${size}px`;
                 firework.style.height = `${size}px`;
-                
-                // 随机动画延迟
+
                 firework.style.animationDelay = `${Math.random() * 0.5}s`;
-                
+
                 fireworksContainer.appendChild(firework);
             }
-            
-            // 2秒后移除烟花
+
             setTimeout(() => {
                 fireworksContainer.innerHTML = '';
             }, 2000);
         }
-        
+
         // 添加任务时的动画效果
         function animateTaskAddition() {
             if (tasksContainer.children.length > 1) {
                 const firstTask = tasksContainer.children[0];
                 firstTask.style.opacity = '0';
                 firstTask.style.transform = 'translateY(20px)';
-                
+
                 setTimeout(() => {
                     firstTask.style.transition = 'all 0.5s ease';
                     firstTask.style.opacity = '1';
@@ -650,7 +585,7 @@
                 }, 10);
             }
         }
-        
+
         // 初始化应用
         init();
     </script>
