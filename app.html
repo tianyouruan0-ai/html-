@@ -333,15 +333,17 @@
     <div class="fireworks-container" id="fireworksContainer"></div>
 
     <script>
+        // ============================================================
+        // 云端同步配置 (对接你在 Render 部署的后端)
+        // ============================================================
+        const API_BASE = 'https://html-1-swfp.onrender.com';
+
         // DOM元素
         const taskInput = document.getElementById('taskInput');
         const addTaskBtn = document.getElementById('addTaskBtn');
         const tasksContainer = document.getElementById('tasksContainer');
         const fireworksContainer = document.getElementById('fireworksContainer');
 
-        // ============================================================
-        // 本地稳定存储方案（彻底移除外网同步报错）
-        // ============================================================
         function currentUser() {
             try {
                 const u = JSON.parse(localStorage.getItem('user'));
@@ -364,17 +366,32 @@
             el.style.color = (ok === true) ? '#10b981' : '#ef4444';
         }
 
-        // 任务数组：从本机缓存安全加载
-        let tasks = JSON.parse(localStorage.getItem('tasks_' + USERNAME));
-        if (tasks === null) {
-            tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-        }
+        // 任务数组
+        let tasks = [];
 
-        // 初始化
+        // 初始化：尝试从云端加载，如果云端不通则自动降级使用本地缓存
         async function init() {
+            try {
+                setSyncStatus('☁️ 正在连接云端数据库...', true);
+                const response = await fetch(`${API_BASE}/api/tasks?user=${encodeURIComponent(USERNAME)}`, {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    tasks = Array.isArray(data) ? data : [];
+                    setSyncStatus('☁️ 云端同步已连接 · 账号 ' + USERNAME, true);
+                } else {
+                    throw new Error('云端响应异常');
+                }
+            } catch (error) {
+                console.warn('无法连接云端，切换为本地缓存模式', error);
+                tasks = JSON.parse(localStorage.getItem('tasks_' + USERNAME)) || JSON.parse(localStorage.getItem('tasks')) || [];
+                setSyncStatus('💻 离线本地模式（首次唤醒可能需要30秒）', false);
+            }
+
             renderTasks();
             addEventListeners();
-            setSyncStatus('💻 本地存储模式已就绪 · 账号 ' + USERNAME, true);
         }
 
         // 添加事件监听
@@ -386,7 +403,7 @@
         }
 
         // 添加新任务
-        function addTask() {
+        async function addTask() {
             const content = taskInput.value.trim();
             if (!content) return;
 
@@ -394,23 +411,33 @@
                 id: Date.now(),
                 content: content,
                 timestamp: new Date().toLocaleString(),
-                completed: false
+                completed: false,
+                username: USERNAME
             };
 
             tasks.unshift(newTask);
-            saveTasks();
             renderTasks();
+            saveTasksLocally();
 
             // 清空输入框
             taskInput.value = '';
             taskInput.focus();
-
-            // 添加动画效果
             animateTaskAddition();
+
+            // 尝试同步到云端
+            try {
+                await fetch(`${API_BASE}/api/tasks`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newTask)
+                });
+            } catch (e) {
+                console.error('云端保存失败', e);
+            }
         }
 
-        // 保存任务到本地缓存
-        function saveTasks() {
+        // 保存任务到本地缓存兜底
+        function saveTasksLocally() {
             localStorage.setItem('tasks_' + USERNAME, JSON.stringify(tasks));
         }
 
@@ -455,7 +482,6 @@
 
                 tasksContainer.appendChild(taskElement);
 
-                // 添加任务卡片的事件监听
                 const editBtn = taskElement.querySelector('.edit-btn');
                 const deleteBtn = taskElement.querySelector('.delete-btn');
                 const completeBtn = taskElement.querySelector('.complete-btn');
@@ -490,17 +516,27 @@
             const saveBtn = taskElement.querySelector('#saveEditBtn');
             const editInput = taskElement.querySelector('#editInput');
 
-            saveBtn.addEventListener('click', () => {
+            saveBtn.addEventListener('click', async () => {
                 const newContent = editInput.value.trim();
                 if (newContent) {
                     task.content = newContent;
                     task.timestamp = new Date().toLocaleString();
-                    saveTasks();
+                    saveTasksLocally();
                     renderTasks();
+
+                    // 同步修改到后端
+                    try {
+                        await fetch(`${API_BASE}/api/tasks/${taskId}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(task)
+                        });
+                    } catch (e) {
+                        console.error('云端更新失败', e);
+                    }
                 }
             });
 
-            // 允许按回车保存
             editInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
@@ -508,34 +544,46 @@
                 }
             });
 
-            // 自动聚焦并选中所有文本
             editInput.focus();
             editInput.select();
         }
 
         // 删除任务
-        function deleteTask(taskId) {
+        async function deleteTask(taskId) {
             tasks = tasks.filter(task => task.id != taskId);
-            saveTasks();
+            saveTasksLocally();
             renderTasks();
+
+            try {
+                await fetch(`${API_BASE}/api/tasks/${taskId}`, {
+                    method: 'DELETE'
+                });
+            } catch (e) {
+                console.error('云端删除失败', e);
+            }
         }
 
         // 完成任务
-        function completeTask(taskId) {
+        async function completeTask(taskId) {
             const taskIndex = tasks.findIndex(task => task.id == taskId);
             if (taskIndex === -1) return;
 
-            // 创建烟花效果
             createFireworks();
 
-            // 移除任务
             tasks.splice(taskIndex, 1);
-            saveTasks();
+            saveTasksLocally();
 
-            // 延迟渲染让用户看到烟花效果
             setTimeout(() => {
                 renderTasks();
             }, 1000);
+
+            try {
+                await fetch(`${API_BASE}/api/tasks/${taskId}`, {
+                    method: 'DELETE'
+                });
+            } catch (e) {
+                console.error('云端完成状态同步失败', e);
+            }
         }
 
         // 创建烟花效果
