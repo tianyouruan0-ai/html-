@@ -4,19 +4,33 @@ import psycopg2
 import json
 import os
 
+# 尝试加载同目录下的 .env 文件（本地运行用；Railway 上没有该文件会自动跳过）
+try:
+    from dotenv import load_dotenv
+    load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), '.env'))
+except ImportError:
+    pass
+
 app = Flask(__name__)
 CORS(app)  # 允许前端跨域请求
 
 # ============================================================
 # 阿里云 PolarDB 连接配置
-# 优先读环境变量（Railway 部署时在 Variables 里配置，更安全）；
-# 本地没配环境变量时使用下面的兜底值，方便直接运行
+# 全部从环境变量读取：
+#   - 本地运行：写在项目根目录的 .env 文件里（不会提交到 GitHub）
+#   - Railway： 在项目的 Variables 选项卡里配置
 # ============================================================
 DB_HOST = os.environ.get("DB_HOST", "ruanwork.rwlb.rds.aliyuncs.com")
 DB_PORT = int(os.environ.get("DB_PORT", "5432"))
 DB_NAME = os.environ.get("DB_NAME", "postgres")
-DB_USER = os.environ.get("DB_USER", "ruan")
-DB_PASSWORD = os.environ.get("DB_PASSWORD", "0i+2^+mJzG&U5o5BTR2)w3mE+-eZ78ae")
+DB_USER = os.environ.get("DB_USER", "")
+DB_PASSWORD = os.environ.get("DB_PASSWORD", "")
+
+if not DB_USER or not DB_PASSWORD:
+    raise RuntimeError(
+        "缺少数据库账号配置：请在本目录创建 .env 文件（本地）"
+        "或在 Railway 的 Variables 里配置 DB_USER 和 DB_PASSWORD"
+    )
 
 # 项目根目录（用于给手机提供网页静态文件）
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))

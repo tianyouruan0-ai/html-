@@ -1,0 +1,12 @@
+# 环境变量文件（包含数据库密码，绝不提交到 GitHub）
+.env
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# 系统文件
+.DS_Store
+Thumbs.db
