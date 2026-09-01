@@ -334,9 +334,15 @@
 
     <script>
         // ============================================================
-        // 云端同步配置 (对接你在 Render 部署的后端)
+        // 云端同步配置 (本地 Flask / Railway 部署通用)
+        // 接口地址自动跟随当前访问的域名：
+        //   - 通过 Railway 网址访问 → 请求发到 Railway
+        //   - 通过局域网 IP 访问    → 请求发到本机 Flask
+        //   - 双击本地文件打开(file://) → 兜底到本机局域网地址
         // ============================================================
-        const API_BASE = 'https://html-1-swfp.onrender.com';
+        const API_BASE = (location.protocol === 'http:' || location.protocol === 'https:')
+            ? location.origin
+            : 'http://192.168.1.101:5000';
 
         // DOM元素
         const taskInput = document.getElementById('taskInput');
@@ -633,6 +639,40 @@
                 }, 10);
             }
         }
+
+        // ============================================================
+        // 云端轮询：每 5 秒拉取最新任务，保证多端（电脑/手机）数据自动同步
+        // 正在编辑任务时跳过本轮，避免打断输入；数据无变化时不重新渲染
+        // ============================================================
+        let lastSyncedJson = '';
+
+        async function pollCloudSync() {
+            // 有任务处于编辑状态时，本轮跳过
+            if (document.querySelector('.task-card.edit-mode')) return;
+            // 正在输入新任务时，本轮跳过
+            if (document.activeElement === taskInput && taskInput.value.trim()) return;
+            try {
+                const response = await fetch(`${API_BASE}/api/tasks?user=${encodeURIComponent(USERNAME)}`, {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' },
+                    cache: 'no-store'
+                });
+                if (!response.ok) return;
+                const data = await response.json();
+                const cloudTasks = Array.isArray(data) ? data : [];
+                const cloudJson = JSON.stringify(cloudTasks);
+                if (cloudJson !== JSON.stringify(tasks) && cloudJson !== lastSyncedJson) {
+                    lastSyncedJson = cloudJson;
+                    tasks = cloudTasks;
+                    saveTasksLocally();
+                    renderTasks();
+                }
+            } catch (e) {
+                /* 网络不通时静默等待下一轮 */
+            }
+        }
+
+        setInterval(pollCloudSync, 5000);
 
         // 初始化应用
         init();
