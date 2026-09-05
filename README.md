@@ -1,1 +1,1 @@
-personal website
+For private use only
