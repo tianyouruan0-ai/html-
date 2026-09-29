@@ -4,482 +4,149 @@
     <meta charset="UTF-8">
     <title>动态登录页面</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        /* ============ 全局重置 ============ */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 0;
-            padding: 20px;
-        }
-
-        /* ============ 登录容器 ============ */
-        .login-container {
-            width: 100%;
-            max-width: 420px;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 40px 35px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            animation: slideUp 0.6s ease-out;
-        }
-
-        .login-container:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.35);
-        }
-
-        /* ============ 标题 ============ */
-        .login-container h2 {
-            text-align: center;
-            color: #333;
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 30px;
-            letter-spacing: 2px;
-            position: relative;
-        }
-
-        .login-container h2::after {
-            content: '';
-            display: block;
-            width: 50px;
-            height: 4px;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            margin: 10px auto 0;
-            border-radius: 2px;
-        }
-
-        /* ============ 表单组 ============ */
-        .input-group {
-            position: relative;
-            margin-bottom: 25px;
-        }
-
-        .input-group label {
-            display: block;
-            color: #555;
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            letter-spacing: 0.5px;
-        }
-
-        .input-group input {
-            width: 100%;
-            padding: 12px 40px 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 15px;
-            color: #333;
-            background: #f8f9fa;
-            transition: all 0.3s ease;
-            outline: none;
-        }
-
-        .input-group input:focus {
-            border-color: #667eea;
-            background: #fff;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
-        }
-
-        .input-group input::placeholder {
-            color: #aaa;
-            font-size: 14px;
-        }
-
-        /* ============ 密码切换按钮 ============ */
-        .toggle-pwd {
-            position: absolute;
-            right: 15px;
-            bottom: 12px;
-            cursor: pointer;
-            font-size: 20px;
-            user-select: none;
-            opacity: 0.6;
-            transition: all 0.2s ease;
-            background: none;
-            border: none;
-            padding: 0;
-            line-height: 1;
-        }
-
-        .toggle-pwd:hover {
-            opacity: 1;
-            transform: scale(1.1);
-        }
-
-        /* ============ 记住我选项 ============ */
-        .remember-group {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 8px 0 20px;
-            padding: 0 2px;
-        }
-
-        .remember-label {
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            font-size: 14px;
-            color: #666;
-            user-select: none;
-            transition: color 0.2s ease;
-        }
-
-        .remember-label:hover {
-            color: #333;
-        }
-
-        .remember-checkbox {
-            width: 18px;
-            height: 18px;
-            margin-right: 8px;
-            cursor: pointer;
-            accent-color: #667eea;
-            transition: all 0.2s ease;
-        }
-
-        .remember-checkbox:hover {
-            transform: scale(1.1);
-        }
-
-        .remember-text {
-            font-weight: 500;
-        }
-
-        .forgot-link {
-            color: #667eea;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            border-bottom: 2px solid transparent;
-        }
-
-        .forgot-link:hover {
-            color: #5a6fd6;
-            border-bottom-color: #667eea;
-        }
-
-        /* ============ 登录按钮 ============ */
-        .login-btn {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #fff;
-            border: none;
-            border-radius: 10px;
-            font-size: 18px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            letter-spacing: 1px;
-            margin-top: 10px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .login-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-        }
-
-        .login-btn:active {
-            transform: translateY(0);
-        }
-
-        .login-btn:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-
-        /* ============ 消息提示 ============ */
-        #loginMessage {
-            margin-top: 18px;
-            text-align: center;
-            font-size: 14px;
-            min-height: 24px;
-            transition: all 0.3s ease;
-            font-weight: 500;
-        }
-
-        #loginMessage.success {
-            color: #28a745;
-        }
-
-        #loginMessage.error {
-            color: #dc3545;
-        }
-
-        #loginMessage.info {
-            color: #17a2b8;
-        }
-
-        /* ============ 弹窗样式 ============ */
-        .dialog-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.55);
-            backdrop-filter: blur(4px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            opacity: 0;
-            transition: opacity 0.35s ease;
-        }
-
-        .dialog-overlay.dialog-show {
-            opacity: 1;
-        }
-
-        .dialog-overlay.dialog-hide {
-            opacity: 0;
-        }
-
-        .dialog-content {
-            background: #ffffff;
-            border-radius: 16px;
-            padding: 35px 40px 30px;
-            min-width: 320px;
-            max-width: 420px;
-            text-align: center;
-            position: relative;
-            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4);
-            transform: scale(0.85) translateY(20px);
-            transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        .dialog-overlay.dialog-show .dialog-content {
-            transform: scale(1) translateY(0);
-        }
-
-        .dialog-overlay.dialog-hide .dialog-content {
-            transform: scale(0.85) translateY(20px);
-        }
-
-        .dialog-close {
-            position: absolute;
-            top: 12px;
-            right: 18px;
-            font-size: 30px;
-            cursor: pointer;
-            color: #bbb;
-            transition: all 0.2s ease;
-            line-height: 1;
-            background: none;
-            border: none;
-            padding: 0;
-        }
-
-        .dialog-close:hover {
-            color: #333;
-            transform: rotate(90deg);
-        }
-
-        .dialog-icon {
-            font-size: 56px;
-            margin-bottom: 12px;
-        }
-
-        .dialog-text {
-            font-size: 16px;
-            color: #333;
-            margin: 10px 0 25px;
-            line-height: 1.7;
-            font-weight: 500;
-        }
-
-        .dialog-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #fff;
-            border: none;
-            padding: 12px 45px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            letter-spacing: 0.5px;
-        }
-
-        .dialog-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-        }
-
-        .dialog-btn:active {
-            transform: translateY(0);
-        }
-
-        /* ============ 按钮加载状态 ============ */
-        .login-btn.loading {
-            background: linear-gradient(135deg, #8a9ae8 0%, #9b7ab8 100%);
-            cursor: wait;
-        }
-
-        .login-btn.success {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
-        }
-
-        /* ============ 动画 ============ */
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(40px) scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        /* ============ 响应式设计 ============ */
-        @media (max-width: 480px) {
-            .login-container {
-                padding: 30px 20px;
-                border-radius: 16px;
-            }
-
-            .login-container h2 {
-                font-size: 24px;
-            }
-
-            .login-btn {
-                font-size: 16px;
-                padding: 12px;
-            }
-
-            .input-group input {
-                padding: 11px 35px 11px 12px;
-                font-size: 14px;
-            }
-
-            .dialog-content {
-                min-width: auto;
-                width: 90%;
-                padding: 28px 20px 25px;
-            }
-
-            .dialog-text {
-                font-size: 15px;
-            }
-
-            .remember-group {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 8px;
-                margin: 5px 0 15px;
-            }
-
-            .remember-label {
-                font-size: 13px;
-            }
-
-            .forgot-link {
-                font-size: 13px;
-                margin-left: 26px;
-            }
-
-            .remember-checkbox {
-                width: 16px;
-                height: 16px;
-            }
-        }
-
-        @media (max-width: 360px) {
-            .login-container {
-                padding: 20px 15px;
-            }
-
-            .login-container h2 {
-                font-size: 20px;
-            }
-
-            .toggle-pwd {
-                right: 12px;
-                font-size: 18px;
-            }
-        }
-
-        /* ============ 输入框自动填充样式 ============ */
-        .input-group input:-webkit-autofill {
-            -webkit-box-shadow: 0 0 0 30px #f8f9fa inset !important;
-            -webkit-text-fill-color: #333 !important;
-        }
-
-        .input-group input:-webkit-autofill:focus {
-            -webkit-box-shadow: 0 0 0 30px #fff inset !important;
-        }
-
-        /* ============ 滚动条美化 ============ */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.05);
-            border-radius: 3px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border-radius: 3px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(135deg, #5a6fd6, #6a3f8f);
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="login-container">
-        <form id="loginForm">
-            <h2>登录</h2>
+    <div class="login-page">
+        <!-- ============ 左侧蓝色弧形品牌面板 ============ -->
+        <aside class="panel-left">
+            <div class="brand-title">NFT前端工程师<span class="accent">bilibili</span></div>
 
-            <div class="input-group">
-                <label for="username">用户名</label>
-                <input type="text" id="username" name="username"
-                       autocomplete="username" placeholder="请输入用户名" required>
+            <div class="panel-slogan">
+                <h3>New here ?</h3>
+                <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit.<br>Debitis, ex ratione. Aliquid!</p>
+                <button type="button" class="signup-btn" id="signupBtn">SIGN UP</button>
             </div>
 
-            <div class="input-group">
-                <label for="password">密码</label>
-                <input type="password" id="password" name="password"
-                       autocomplete="current-password" placeholder="请输入密码" required>
-                <span class="toggle-pwd" id="togglePwd">👁️</span>
-            </div>
+            <!-- 火箭 + 人物插画（手绘 SVG） -->
+            <div class="panel-illustration">
+                <svg viewBox="0 0 420 300" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <!-- 地面阴影 -->
+                    <ellipse cx="220" cy="278" rx="150" ry="14" fill="#1f5fc4" opacity="0.45"/>
 
-            <!-- 记住我选项 -->
-            <div class="remember-group">
-                <label class="remember-label">
-                    <input type="checkbox" id="rememberMe" class="remember-checkbox">
-                    <span class="remember-text">记住我</span>
-                </label>
-                <a href="#" class="forgot-link">忘记密码？</a>
-            </div>
+                    <!-- 装饰植物（左） -->
+                    <g opacity="0.85">
+                        <path d="M70 268 C 60 220, 66 190, 84 168 C 74 200, 72 235, 78 268 Z" fill="#2e7fd9"/>
+                        <path d="M84 268 C 88 226, 100 200, 120 186 C 102 212, 92 240, 90 268 Z" fill="#5aa8ef"/>
+                        <path d="M62 268 C 50 238, 48 214, 56 194 C 52 220, 56 246, 68 268 Z" fill="#5aa8ef"/>
+                    </g>
 
-            <button type="submit" class="login-btn">登录</button>
-            <div id="loginMessage"></div>
-        </form>
+                    <!-- 装饰植物（右） -->
+                    <g opacity="0.9">
+                        <path d="M368 268 C 378 234, 376 210, 362 190 C 370 214, 368 242, 360 268 Z" fill="#2e7fd9"/>
+                        <path d="M354 268 C 348 240, 350 218, 362 200 C 354 222, 354 246, 360 268 Z" fill="#5aa8ef"/>
+                    </g>
+
+                    <!-- 火箭 -->
+                    <g>
+                        <!-- 尾焰 -->
+                        <path d="M150 232 C 138 252, 138 266, 148 282 C 158 266, 158 252, 150 232 Z" fill="#ff9d4d"/>
+                        <path d="M150 240 C 144 254, 144 262, 150 272 C 156 262, 156 254, 150 240 Z" fill="#ffd166"/>
+                        <!-- 左尾翼 -->
+                        <path d="M132 190 C 112 202, 102 224, 100 246 C 116 238, 130 224, 138 208 Z" fill="#dfe9f5"/>
+                        <!-- 右尾翼 -->
+                        <path d="M176 202 C 194 210, 204 226, 208 244 C 192 240, 178 228, 170 214 Z" fill="#c3d4e8"/>
+                        <!-- 箭身 -->
+                        <path d="M154 84 C 128 116, 118 168, 126 224 C 134 244, 168 244, 178 226 C 188 170, 178 116, 154 84 Z" fill="#f4f8fc"/>
+                        <!-- 箭身左侧阴影 -->
+                        <path d="M154 84 C 138 114, 130 164, 136 222 C 140 236, 152 242, 160 240 C 146 190, 144 130, 154 84 Z" fill="#dde8f3"/>
+                        <!-- 舷窗 -->
+                        <circle cx="156" cy="150" r="24" fill="#c9d8ea"/>
+                        <circle cx="156" cy="150" r="17" fill="#3f96f7"/>
+                        <circle cx="150" cy="143" r="5" fill="#a8d4ff" opacity="0.9"/>
+                        <!-- 箭头顶部 -->
+                        <path d="M154 84 C 146 96, 140 110, 136 126 C 148 118, 164 118, 174 124 C 170 108, 163 94, 154 84 Z" fill="#3f96f7"/>
+                    </g>
+
+                    <!-- 盘坐人物 -->
+                    <g>
+                        <!-- 阴影 -->
+                        <ellipse cx="282" cy="272" rx="62" ry="10" fill="#1f5fc4" opacity="0.5"/>
+                        <!-- 交叉的腿（深色长裤） -->
+                        <path d="M232 258 C 240 240, 262 232, 282 232 C 302 232, 322 240, 330 258 C 320 268, 244 268, 232 258 Z" fill="#3a3f5c"/>
+                        <!-- 左脚鞋子 -->
+                        <path d="M228 256 C 222 252, 220 258, 224 262 C 230 266, 240 266, 242 262 Z" fill="#20243a"/>
+                        <!-- 右脚鞋子 -->
+                        <path d="M334 256 C 340 252, 342 258, 338 262 C 332 266, 322 266, 320 262 Z" fill="#20243a"/>
+                        <!-- 上身（白衬衫） -->
+                        <path d="M258 186 C 250 200, 246 220, 250 240 C 268 248, 296 248, 314 240 C 318 218, 314 200, 306 186 C 290 178, 274 178, 258 186 Z" fill="#f2f5f9"/>
+                        <!-- 左臂（捧着笔记本） -->
+                        <path d="M260 192 C 250 202, 246 216, 252 228 C 262 234, 276 234, 284 228 L 276 214 C 268 216, 262 212, 260 192 Z" fill="#f2f5f9"/>
+                        <!-- 右臂 -->
+                        <path d="M304 192 C 314 202, 318 216, 312 228 C 302 234, 288 234, 280 228 L 288 214 C 296 216, 302 212, 304 192 Z" fill="#e4eaf1"/>
+                        <!-- 手上的平板/笔记本 -->
+                        <rect x="258" y="216" width="48" height="10" rx="3" fill="#2f3a4e" transform="rotate(-6 282 221)"/>
+                        <!-- 脖子 -->
+                        <rect x="276" y="168" width="12" height="14" rx="5" fill="#e8a98c"/>
+                        <!-- 头部 -->
+                        <circle cx="282" cy="150" r="22" fill="#f0b394"/>
+                        <!-- 头发 -->
+                        <path d="M262 146 C 258 128, 272 116, 286 118 C 300 120, 306 132, 304 144 C 296 134, 288 130, 278 132 C 270 134, 264 140, 262 146 Z" fill="#2b2f3e"/>
+                        <!-- 后发束 -->
+                        <path d="M300 138 C 308 142, 310 154, 306 164 C 302 156, 298 148, 296 142 Z" fill="#2b2f3e"/>
+                    </g>
+                </svg>
+            </div>
+        </aside>
+
+        <!-- ============ 右侧登录区 ============ -->
+        <main class="panel-right">
+            <div class="login-box">
+                <form id="loginForm">
+                    <h2>Sign in</h2>
+
+                    <div class="input-group">
+                        <input type="text" id="username" name="username"
+                               autocomplete="username" placeholder="Username" required>
+                        <!-- 用户图标 -->
+                        <svg class="input-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
+                        </svg>
+                    </div>
+
+                    <div class="input-group">
+                        <input type="password" id="password" name="password"
+                               autocomplete="current-password" placeholder="Password" required>
+                        <!-- 锁图标 -->
+                        <svg class="input-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5zm-3 5a3 3 0 1 1 6 0v3H9V7zm3 8a1.5 1.5 0 0 1 .75 2.8V19a.75.75 0 0 1-1.5 0v-1.2A1.5 1.5 0 0 1 12 15z"/>
+                        </svg>
+                        <span class="toggle-pwd" id="togglePwd">👁️</span>
+                    </div>
+
+                    <!-- 记住我选项 -->
+                    <div class="remember-group">
+                        <label class="remember-label">
+                            <input type="checkbox" id="rememberMe" class="remember-checkbox">
+                            <span class="remember-text">记住我</span>
+                        </label>
+                        <a href="#" class="forgot-link">忘记密码？</a>
+                    </div>
+
+                    <button type="submit" class="login-btn">LOGIN</button>
+                    <div id="loginMessage"></div>
+                </form>
+
+                <!-- 社交平台登录 -->
+                <div class="social-section">
+                    <div class="social-text">Or Sign in with social platforms</div>
+                    <div class="social-icons">
+                        <a href="#" title="Facebook" aria-label="Facebook">
+                            <svg viewBox="0 0 24 24"><path d="M13.5 21v-7.5h2.52l.48-3h-3V8.56c0-.87.24-1.46 1.5-1.46H16.6V4.4c-.28-.04-1.26-.12-2.4-.12-2.37 0-4 1.45-4 4.1v2.12H7.7v3h2.5V21h3.3z"/></svg>
+                        </a>
+                        <a href="#" title="Twitter" aria-label="Twitter">
+                            <svg viewBox="0 0 24 24"><path d="M21.5 6.1c-.7.3-1.4.5-2.2.6.8-.5 1.4-1.2 1.7-2.1-.75.45-1.58.77-2.46.94A3.86 3.86 0 0 0 15.7 4.3c-2.13 0-3.86 1.73-3.86 3.86 0 .3.03.6.1.88-3.2-.16-6.05-1.7-7.95-4.03a3.85 3.85 0 0 0 1.2 5.15c-.63-.02-1.22-.2-1.74-.48v.05c0 1.87 1.33 3.43 3.1 3.79-.32.09-.66.13-1.02.13-.25 0-.5-.02-.73-.07.5 1.54 1.93 2.66 3.63 2.69a7.74 7.74 0 0 1-4.8 1.66c-.3 0-.61-.02-.9-.05a10.9 10.9 0 0 0 5.93 1.74c7.1 0 11-5.9 11-11v-.5c.75-.55 1.4-1.22 1.94-2z"/></svg>
+                        </a>
+                        <a href="#" title="Google" aria-label="Google">
+                            <svg viewBox="0 0 24 24"><path d="M21.35 11.1H12v3.02h5.34c-.23 1.4-1.7 4.1-5.34 4.1a5.9 5.9 0 0 1 0-11.8c1.67 0 2.8.72 3.44 1.33l2.34-2.26C16.3 4.1 14.36 3.2 12 3.2a8.8 8.8 0 1 0 0 17.6c5.08 0 8.44-3.57 8.44-8.6 0-.58-.06-1.02-.15-1.46z" transform="translate(0 -.34)"/></svg>
+                        </a>
+                        <a href="#" title="LinkedIn" aria-label="LinkedIn">
+                            <svg viewBox="0 0 24 24"><path d="M6.94 8.6H3.56V20.4h3.38V8.6zM5.25 3.2a1.96 1.96 0 1 0 0 3.92 1.96 1.96 0 0 0 0-3.92zM20.4 13.28c0-3.24-1.73-4.75-4.04-4.75-1.86 0-2.7 1.03-3.16 1.75V8.6H9.82c.04.96 0 11.8 0 11.8h3.38v-6.6c0-.35.02-.7.13-.95.28-.7.92-1.42 2-1.42 1.4 0 1.97 1.07 1.97 2.65v6.32h3.38l.01-6.47v.35z"/></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
 
     <!-- 刷新守卫：登录成功时发放一次性票据 -->
@@ -595,7 +262,7 @@
             }
 
             function resetLoginButton() {
-                loginBtn.textContent = '登录';
+                loginBtn.textContent = 'LOGIN';
                 loginBtn.disabled = false;
                 loginBtn.classList.remove('loading', 'success');
             }
@@ -660,7 +327,7 @@
                     if (rememberCheckbox) rememberCheckbox.checked = true;
 
                     console.log('🔄 检测到记住的账号，已回填，请手动点击登录');
-                    setMessage('已回填记住的账号，请点击"登录"重新进入', 'info');
+                    setMessage('已回填记住的账号，请点击"LOGIN"重新进入', 'info');
                 }
             }
 
@@ -782,6 +449,14 @@
                     }
                 });
             });
+
+            // SIGN UP 按钮：注册功能暂未开放，给出友好提示
+            const signupBtn = document.getElementById('signupBtn');
+            if (signupBtn) {
+                signupBtn.addEventListener('click', function() {
+                    setMessage('注册功能暂未开放，请联系管理员开通账号', 'info');
+                });
+            }
 
             // ============ 初始化 ============
 
