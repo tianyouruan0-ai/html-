@@ -798,6 +798,7 @@
             cursor: pointer;
             transition: all 0.2s ease;
             border: 1px solid transparent;
+            text-decoration: none;
         }
 
         .app-card:hover {
@@ -1585,19 +1586,23 @@
                 return;
             }
             data.forEach(app => {
-                const card = document.createElement('div');
+                const hasPage = app.url && app.url !== '#';
+                // 有独立页面的应用渲染为原生 <a> 链接：不会被浏览器弹窗拦截器拦截，
+                // 且支持 Ctrl+点击 / 中键新开；无页面的应用保留点击提示
+                const card = document.createElement(hasPage ? 'a' : 'div');
                 card.className = 'app-card';
+                card.title = app.name;
+                if (hasPage) {
+                    card.href = app.url;
+                    card.target = '_blank';
+                    card.rel = 'noopener';
+                } else {
+                    card.addEventListener('click', () => showToast(`「${app.name}」功能待接入`));
+                }
                 card.innerHTML = `
                     <div class="app-icon" style="background:${app.color}; color:${app.textColor};">${app.icon}</div>
                     <div class="app-name">${app.name}</div>
                 `;
-                card.addEventListener('click', () => {
-                    if (app.url && app.url !== '#') {
-                        window.open(app.url, '_blank');
-                    } else {
-                        alert(`你点击了: ${app.name} (功能待接入)`);
-                    }
-                });
                 grid.appendChild(card);
             });
         }
