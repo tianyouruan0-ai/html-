@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProcessOn · 任务管理器数据</title>
+    <style>
+        /* Apple 官网字体栈（与工作台一致） */
+        :root {
+            --font-apple: "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont,
+                          "PingFang SC", "Helvetica Neue", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            --text-primary: #1d1d1f;
+            --text-secondary: #86868b;
+            --accent-blue: #0071e3;
+            --bg-page: #f5f5f7;
+            /* 状态色 */
+            --c-done: #34c759;
+            --c-doing: #ff9500;
+            --c-pending: #d2d2d7;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html, body {
+            font-family: var(--font-apple);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            background-color: var(--bg-page);
+            color: var(--text-primary);
+            font-size: 17px;
+            line-height: 1.47;
+            letter-spacing: -0.01em;
+            min-height: 100vh;
+        }
+
+        .page {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 32px 24px 60px;
+        }
+
+        /* 顶栏 */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--accent-blue);
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 500;
+            padding: 6px 14px;
+            border-radius: 999px;
+            transition: background 0.2s;
+        }
+
+        .back-link:hover { background: #e8f1fd; }
+
+        .refresh-btn {
+            border: none;
+            background: var(--accent-blue);
+            color: #fff;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 18px;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .refresh-btn:hover { background: #0077ed; }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.015em;
+            margin-bottom: 6px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 28px;
+        }
+
+        /* KPI 卡片 */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .kpi-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 20px 22px;
+            border: 1px solid #e8e8ed;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+        }
+
+        .kpi-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .kpi-value {
+            font-size: 34px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .kpi-value small {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-left: 2px;
+        }
+
+        /* 状态分布：环形图 + 图例 */
+        .chart-row {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .panel {
+            background: #fff;
+            border-radius: 16px;
+            padding: 22px 24px;
+            border: 1px solid #e8e8ed;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+        }
+
+        .panel-title {
+            font-size: 17px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .donut-wrap {
+            display: flex;
+            justify-content: center;
+            position: relative;
+        }
+
+        .donut-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .donut-center .num {
+            font-size: 30px;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .donut-center .lbl {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* 图例列表 */
+        .legend-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f2;
+            font-size: 15px;
+        }
+
+        .legend-item:last-child { border-bottom: none; }
+
+        .legend-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 3px;
+        }
+
+        .legend-count {
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .legend-pct {
+            color: var(--text-secondary);
+            font-size: 13px;
+            margin-left: 6px;
+        }
+
+        /* 任务明细 */
+        .task-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 0;
+            border-bottom: 1px solid #f0f0f2;
+            font-size: 14px;
+        }
+
+        .task-row:last-child { border-bottom: none; }
+
+        .task-row .t-text {
+            flex: 1;
+            min-width: 0;
+            word-break: break-all;
+        }
+
+        .task-row .t-text.completed {
+            text-decoration: line-through;
+            color: var(--text-secondary);
+        }
+
+        .task-row .t-time {
+            font-size: 12px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+
+        /* 钩子按钮：点击直接标记为已完成 */
+        .check-btn {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            border: 1.5px solid #d2d2d7;
+            background: #fff;
+            color: transparent;
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 1;
+            cursor: pointer;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .check-btn:hover {
+            border-color: var(--c-done);
+            color: var(--c-done);
+            transform: scale(1.08);
+        }
+
+        .check-btn.is-done {
+            background: var(--c-done);
+            border-color: var(--c-done);
+            color: #fff;
+        }
+
+        .status-badge {
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 3px 10px;
+            white-space: nowrap;
+        }
+
+        .empty-tip {
+            color: var(--text-secondary);
+            font-size: 14px;
+            text-align: center;
+            padding: 30px 0;
+        }
+
+        /* 环形图分段入场动画 */
+        .donut-seg {
+            transition: stroke-dasharray 0.8s ease, stroke-dashoffset 0.8s ease;
+        }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background: #d2d2d7; border-radius: 3px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+
+        @media (max-width: 860px) {
+            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+            .chart-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="top-bar">
+            <a class="back-link" href="app.html">← 返回工作台</a>
+            <button class="refresh-btn" id="refreshBtn">↻ 刷新数据</button>
+        </div>
+
+        <h1>任务管理器 · 数据展示</h1>
+        <div class="subtitle" id="subtitle">数据来源：工作台任务管理器（localStorage 实时读取）</div>
+
+        <!-- KPI 指标 -->
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-label">任务解决率</div>
+                <div class="kpi-value" id="kpiRate" style="color: var(--accent-blue);">--<small>%</small></div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">✅ 已完成任务</div>
+                <div class="kpi-value" id="kpiDone" style="color: var(--c-done);">--</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">🔄 正在完成中</div>
+                <div class="kpi-value" id="kpiDoing" style="color: var(--c-doing);">--</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">⏳ 待完成</div>
+                <div class="kpi-value" id="kpiPending" style="color: #86868b;">--</div>
+            </div>
+        </div>
+
+        <!-- 状态分布环形图 + 图例 -->
+        <div class="chart-row">
+            <div class="panel">
+                <div class="panel-title">任务状态分布</div>
+                <div class="donut-wrap">
+                    <svg id="donutSvg" width="220" height="220" viewBox="0 0 220 220">
+                        <!-- 底环 -->
+                        <circle cx="110" cy="110" r="70" fill="none" stroke="#f0f0f2" stroke-width="26"></circle>
+                        <g id="donutSegs"></g>
+                    </svg>
+                    <div class="donut-center">
+                        <div class="num" id="donutTotal">0</div>
+                        <div class="lbl">任务总数</div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel">
+                <div class="panel-title">状态明细</div>
+                <div id="legendList"></div>
+            </div>
+        </div>
+
+        <!-- 全部任务明细 -->
+        <div class="panel">
+            <div class="panel-title">全部任务（含添加时间）</div>
+            <div id="taskDetailList"></div>
+        </div>
+    </div>
+
+    <script>
+        const STATUS_META = {
+            pending: { label: '待完成', color: getComputedStyle(document.documentElement).getPropertyValue('--c-pending').trim(), badge: { color: '#86868b', bg: '#f0f0f2' } },
+            doing:   { label: '正在完成中', color: getComputedStyle(document.documentElement).getPropertyValue('--c-doing').trim(), badge: { color: '#c93400', bg: '#ffece4' } },
+            done:    { label: '已完成', color: getComputedStyle(document.documentElement).getPropertyValue('--c-done').trim(), badge: { color: '#1d7a3e', bg: '#e6f6ea' } }
+        };
+        const STATUS_ORDER = ['done', 'doing', 'pending'];
+
+        /** 读取并规范化工作台任务数据 */
+        function loadTasks() {
+            const raw = JSON.parse(localStorage.getItem('wb_tasks')) || [];
+            return raw.map(t => ({
+                id: t.id,
+                text: t.text,
+                status: t.status || (t.completed ? 'done' : 'pending'),
+                createdAt: t.createdAt || null
+            }));
+        }
+
+        function fmtTime(iso) {
+            if (!iso) return '未记录';
+            const d = new Date(iso);
+            const pad = n => String(n).padStart(2, '0');
+            return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+        }
+
+        function render() {
+            const tasks = loadTasks();
+            const total = tasks.length;
+            const counts = { done: 0, doing: 0, pending: 0 };
+            tasks.forEach(t => { counts[t.status] = (counts[t.status] || 0) + 1; });
+
+            // KPI
+            const rate = total > 0 ? Math.round(counts.done / total * 100) : 0;
+            document.getElementById('kpiRate').innerHTML = rate + '<small>%</small>';
+            document.getElementById('kpiDone').textContent = counts.done;
+            document.getElementById('kpiDoing').textContent = counts.doing;
+            document.getElementById('kpiPending').textContent = counts.pending;
+            document.getElementById('subtitle').textContent =
+                `数据来源：工作台任务管理器（localStorage 实时读取） · 共 ${total} 项任务`;
+
+            // 环形图分段
+            const R = 70, C = 2 * Math.PI * R;
+            const segsGroup = document.getElementById('donutSegs');
+            segsGroup.innerHTML = '';
+            let offset = 0;
+            STATUS_ORDER.forEach(key => {
+                const count = counts[key];
+                if (count === 0) return;
+                const len = count / total * C;
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('cx', 110);
+                circle.setAttribute('cy', 110);
+                circle.setAttribute('r', R);
+                circle.setAttribute('fill', 'none');
+                circle.setAttribute('stroke', STATUS_META[key].color);
+                circle.setAttribute('stroke-width', 26);
+                circle.setAttribute('class', 'donut-seg');
+                // 从 0 动画生长到目标长度
+                circle.setAttribute('stroke-dasharray', `0 ${C}`);
+                circle.setAttribute('stroke-dashoffset', -offset);
+                segsGroup.appendChild(circle);
+                requestAnimationFrame(() => requestAnimationFrame(() => {
+                    circle.setAttribute('stroke-dasharray', `${len} ${C - len}`);
+                }));
+                offset += len;
+            });
+            document.getElementById('donutTotal').textContent = total;
+
+            // 图例
+            const legend = document.getElementById('legendList');
+            legend.innerHTML = '';
+            STATUS_ORDER.forEach(key => {
+                const count = counts[key];
+                const pct = total > 0 ? Math.round(count / total * 100) : 0;
+                const row = document.createElement('div');
+                row.className = 'legend-item';
+                row.innerHTML = `
+                    <div class="legend-left">
+                        <div class="legend-dot" style="background:${STATUS_META[key].color};"></div>
+                        <span>${STATUS_META[key].label}</span>
+                    </div>
+                    <div>
+                        <span class="legend-count">${count}</span>
+                        <span class="legend-pct">项 · ${pct}%</span>
+                    </div>
+                `;
+                legend.appendChild(row);
+            });
+
+            // 任务明细
+            const detail = document.getElementById('taskDetailList');
+            detail.innerHTML = '';
+            if (tasks.length === 0) {
+                detail.innerHTML = '<div class="empty-tip">暂无任务 — 回到工作台添加任务后，这里会自动展示数据</div>';
+                return;
+            }
+            [...tasks].reverse().forEach(t => {
+                const meta = STATUS_META[t.status] || STATUS_META.pending;
+                const row = document.createElement('div');
+                row.className = 'task-row';
+                row.innerHTML = `
+                    <span class="status-badge" style="color:${meta.badge.color}; background:${meta.badge.bg};">${meta.label}</span>
+                    <span class="t-text ${t.status === 'done' ? 'completed' : ''}">${t.text}</span>
+                    <button class="check-btn ${t.status === 'done' ? 'is-done' : ''}" data-id="${t.id}"
+                            title="${t.status === 'done' ? '已完成' : '点击标记为已完成'}">✓</button>
+                    <span class="t-time">🕐 ${fmtTime(t.createdAt)}</span>
+                `;
+                detail.appendChild(row);
+            });
+        }
+
+        // 钩子按钮点击：将该任务标记为已完成（写回 localStorage，与工作台共享）
+        document.getElementById('taskDetailList').addEventListener('click', (e) => {
+            const btn = e.target.closest('.check-btn');
+            if (!btn) return;
+            const id = Number(btn.getAttribute('data-id'));
+            const tasks = loadTasks();
+            const task = tasks.find(t => t.id === id);
+            if (!task) return;
+            task.status = 'done';
+            task.completed = true;
+            localStorage.setItem('wb_tasks', JSON.stringify(tasks));
+            render();
+        });
+
+        document.getElementById('refreshBtn').addEventListener('click', render);
+        // 其他标签页修改任务时自动同步
+        window.addEventListener('storage', render);
+        render();
+    </script>
+</body>
+</html>
