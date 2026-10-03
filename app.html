@@ -1660,5 +1660,18 @@
 
     <!-- 保留原有的刷新守卫 -->
     <script src="auth-guard.js"></script>
+    <script>
+        // 刷新守卫执行点：校验并消费一次性登录票据。
+        // 从登录页跳转过来 → 票据存在 → 放行；
+        // 刷新 / 直接输入网址打开 → 票据已被上次加载消费 → 踢回登录页。
+        if (window.WBAuth) {
+            if (!WBAuth.verify()) {
+                WBAuth.redirectToLogin();
+            }
+        } else {
+            // 守卫脚本加载失败也按未登录处理，防止绕过
+            window.location.href = 'index.html';
+        }
+    </script>
 </body>
 </html>
