@@ -868,6 +868,604 @@
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
         }
 
+        /* ================= 头像菜单 / 设置面板 / 日历动效 ================= */
+        .sidebar-header { position: relative; }
+
+        .avatar-wrap { position: relative; }
+
+        .avatar {
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+
+        .avatar:hover {
+            transform: scale(1.08);
+            box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.18);
+        }
+
+        .gear-btn {
+            border: none;
+            background: transparent;
+            font-size: 18px;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            transition: background 0.2s, transform 0.5s ease;
+        }
+
+        .gear-btn:hover {
+            background: #ececf0;
+            transform: rotate(90deg);
+        }
+
+        .user-menu {
+            position: absolute;
+            top: 42px;
+            left: 0;
+            width: 236px;
+            background: #fff;
+            border-radius: 12px;
+            border: 1px solid #e8e8ed;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.14);
+            padding: 8px;
+            z-index: 300;
+            opacity: 0;
+            transform: translateY(-6px) scale(0.98);
+            transform-origin: top left;
+            pointer-events: none;
+            transition: opacity 0.18s ease, transform 0.18s ease;
+        }
+
+        .user-menu.open {
+            opacity: 1;
+            transform: none;
+            pointer-events: auto;
+        }
+
+        .user-menu-head {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            border-bottom: 1px solid #f0f0f2;
+            margin-bottom: 6px;
+        }
+
+        .user-menu-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0071e3, #6db3f2);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .user-menu-name { font-size: 15px; font-weight: 600; }
+
+        .user-menu-role {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            border: none;
+            background: transparent;
+            padding: 9px 10px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            color: var(--text-primary);
+            cursor: pointer;
+            text-align: left;
+            transition: background 0.15s;
+        }
+
+        .menu-item:hover { background: #ececf0; }
+
+        .menu-item.danger { color: #f5222d; }
+
+        /* 弹窗（个人资料 / 设置） */
+        .modal-mask {
+            position: fixed;
+            inset: 0;
+            background: rgba(29, 29, 31, 0.35);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 500;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+
+        .modal-mask.open { opacity: 1; pointer-events: auto; }
+
+        .modal {
+            width: 400px;
+            max-width: calc(100vw - 40px);
+            max-height: calc(100vh - 60px);
+            overflow-y: auto;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.22);
+            padding: 22px;
+            transform: translateY(12px) scale(0.97);
+            transition: transform 0.22s ease;
+        }
+
+        .modal-mask.open .modal { transform: none; }
+
+        .modal h3 { font-size: 18px; font-weight: 700; }
+
+        .modal-sub {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin: 4px 0 16px;
+        }
+
+        .form-row { margin-bottom: 14px; }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-primary);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1px solid #d2d2d7;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            transition: border 0.2s;
+        }
+
+        .form-input:focus { border-color: var(--accent-blue); }
+
+        .form-input[readonly] {
+            background: #f5f5f7;
+            color: var(--text-secondary);
+        }
+
+        .avatar-picker { display: flex; gap: 8px; flex-wrap: wrap; }
+
+        .avatar-option {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            background: #f0f0f2;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: border 0.15s, transform 0.15s;
+        }
+
+        .avatar-option:hover { transform: scale(1.1); }
+
+        .avatar-option.selected { border-color: var(--accent-blue); background: #e8f1fd; }
+
+        .setting-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f2;
+        }
+
+        .setting-row:last-of-type { border-bottom: none; }
+
+        .setting-name { font-size: 14px; font-weight: 500; }
+
+        .setting-desc {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .switch {
+            position: relative;
+            width: 44px;
+            height: 26px;
+            border-radius: 999px;
+            border: none;
+            background: #d2d2d7;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: background 0.2s;
+        }
+
+        .switch::after {
+            content: "";
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+            transition: transform 0.2s ease;
+        }
+
+        .switch.on { background: var(--accent-blue); }
+
+        .switch.on::after { transform: translateX(18px); }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 18px;
+        }
+
+        .btn-primary, .btn-plain {
+            padding: 9px 18px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: background 0.2s, opacity 0.2s;
+        }
+
+        .btn-primary { background: var(--accent-blue); color: #fff; }
+        .btn-primary:hover { background: #0077ed; }
+
+        .btn-plain { background: #ececf0; color: var(--text-primary); }
+        .btn-plain:hover { background: #e0e0e4; }
+
+        .btn-danger-plain {
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: inherit;
+            cursor: pointer;
+            border: 1px solid #ffd6d1;
+            background: #fff5f4;
+            color: #f5222d;
+            transition: background 0.2s;
+        }
+
+        .btn-danger-plain:hover { background: #ffe9e6; }
+
+        /* ================= 日历页动效背景 ================= */
+        #calendarView {
+            display: none;
+            position: relative;
+        }
+
+        #calendarView > *:not(.cal-fx) {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 动效背景偏深色时保证标题可读 */
+        #calendarView .top-header h1 {
+            color: #fff;
+            text-shadow: 0 1px 10px rgba(10, 40, 90, 0.55);
+        }
+
+        /* 日常：蓝色日出日落渐变天空 + 太阳升降 + 地平线暖光 */
+        .cal-fx {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* 场景层整体羽化：四周向页面底色自然淡出，消除硬边线 */
+        .cal-fx .fx-scene {
+            position: absolute;
+            inset: 0;
+            -webkit-mask-image:
+                linear-gradient(90deg, transparent 0, #000 72px, #000 calc(100% - 72px), transparent 100%),
+                linear-gradient(180deg, transparent 0, #000 56px, #000 calc(100% - 96px), transparent 100%);
+            -webkit-mask-composite: source-in;
+            mask-image:
+                linear-gradient(90deg, transparent 0, #000 72px, #000 calc(100% - 72px), transparent 100%),
+                linear-gradient(180deg, transparent 0, #000 56px, #000 calc(100% - 96px), transparent 100%);
+            mask-composite: intersect;
+        }
+
+        .cal-fx .sky {
+            position: absolute;
+            inset: -6% 0;
+            background: linear-gradient(180deg,
+                #123a7a 0%, #2a5fa8 20%, #4f86c8 38%, #8fc0ea 55%,
+                #cfe6f8 70%, #ffd9a8 86%, #ff9d6e 100%);
+            background-size: 100% 340%;
+            background-position: 50% 0%;
+            animation: skyShift 36s ease-in-out infinite alternate;
+        }
+
+        @keyframes skyShift {
+            0%   { background-position: 50% 0%; }   /* 黎明前的深蓝 */
+            50%  { background-position: 50% 50%; }  /* 白昼蓝天 */
+            100% { background-position: 50% 100%; } /* 日落暖色地平线 */
+        }
+
+        .cal-fx .sun-orb {
+            position: absolute;
+            left: 50%;
+            margin-left: -55px;
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 50% 50%,
+                #fff8e0 0%, #ffe4a8 35%, #ffd98a 55%, rgba(255, 179, 122, 0) 74%);
+            filter: blur(1px);
+            animation: sunPath 36s ease-in-out infinite alternate;
+        }
+
+        @keyframes sunPath {
+            0%   { top: 74%; transform: scale(1.1); }  /* 日出/日落：贴近地平线，更大更暖 */
+            100% { top: 22%; transform: scale(0.9); }  /* 正午：升到高处 */
+        }
+
+        .cal-fx .horizon-glow {
+            position: absolute;
+            left: -10%;
+            right: -10%;
+            bottom: -150px;
+            height: 280px;
+            background: radial-gradient(ellipse at 50% 100%,
+                rgba(255, 190, 120, 0.8), rgba(255, 160, 110, 0.28) 45%, transparent 72%);
+            animation: glowPulse 6s ease-in-out infinite alternate;
+        }
+
+        @keyframes glowPulse {
+            0%   { opacity: 0.55; transform: scaleX(1); }
+            100% { opacity: 0.95; transform: scaleX(1.08); }
+        }
+
+        /* ---- Gradient Blinds 日常背景（渐变百叶窗，移植自 ReactBits 配置） ---- */
+        .cal-fx.has-gb .sky,
+        .cal-fx.has-gb .sun-orb,
+        .cal-fx.has-gb .horizon-glow { display: none; }
+
+        .gb-root {
+            position: absolute;
+            inset: -18%;
+            --c1: #FF9FFC;
+            --c2: #5227FF;
+            --gb-angle: 20deg;
+            --sway: 0.35;
+            --shine: 0.4;
+            --glow: 0.4;
+            --sr: 0.5;
+            --noise: 0.3;
+        }
+
+        .cal-fx.festival .gb-root { display: none; }
+
+        .gb-glowlayer {
+            position: absolute;
+            inset: 0;
+            filter: blur(90px);
+            opacity: var(--glow);
+            background:
+                radial-gradient(ellipse at 30% 20%, var(--c1), transparent 55%),
+                radial-gradient(ellipse at 70% 80%, var(--c2), transparent 55%);
+        }
+
+        .gb-persp {
+            position: absolute;
+            inset: 0;
+            perspective: 1200px;
+        }
+
+        .gb-stage-wrap {
+            position: absolute;
+            inset: 0;
+            transform-style: preserve-3d;
+            transition: transform 0.3s ease-out;
+        }
+
+        .gb-stage {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            justify-content: center;
+            transform: rotate(var(--gb-angle)) scale(1.35);
+        }
+
+        .gb-blind {
+            flex: 0 0 auto;
+            height: 100%;
+            background-image: linear-gradient(180deg, var(--c1), var(--c2));
+            background-size: 100% 320%;
+            background-position: 50% 0%;
+            animation: gbWave 9s ease-in-out infinite alternate,
+                       gbSway 7s ease-in-out infinite;
+        }
+
+        @keyframes gbWave {
+            0%   { background-position: 50% 0%; }
+            100% { background-position: 50% 100%; }
+        }
+
+        @keyframes gbSway {
+            0%, 100% { transform: translateY(calc(var(--sway) * -16px)); }
+            50%      { transform: translateY(calc(var(--sway) * 16px)); }
+        }
+
+        .gb-shine {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: linear-gradient(105deg, transparent 32%, rgba(255, 255, 255, 0.5) 50%, transparent 68%);
+            mix-blend-mode: screen;
+            animation: gbShine 9s ease-in-out infinite alternate;
+        }
+
+        @keyframes gbShine {
+            0%   { transform: translateX(-30%); opacity: calc(var(--shine) * 0.4); }
+            100% { transform: translateX(30%);  opacity: var(--shine); }
+        }
+
+        .gb-spot {
+            position: absolute;
+            inset: 0;
+            --mx: 50%;
+            --my: 35%;
+            background: radial-gradient(circle at var(--mx) var(--my),
+                rgba(255, 255, 255, 0.28), transparent calc(var(--sr) * 70%));
+        }
+
+        .gb-ripple-layer { position: absolute; inset: 0; }
+
+        .gb-ripple {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.55);
+            transform: translate(-50%, -50%);
+            animation: gbRipple 0.9s ease-out forwards;
+            pointer-events: none;
+        }
+
+        @keyframes gbRipple {
+            0%   { width: 0;     height: 0;     opacity: 0.8; }
+            100% { width: 340px; height: 340px; opacity: 0; }
+        }
+
+        .gb-noise {
+            position: absolute;
+            inset: 0;
+            opacity: var(--noise);
+            mix-blend-mode: overlay;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E");
+            background-size: 180px 180px;
+        }
+
+        /* 节日：自动切换主题插图（渐变场景 + 主题 emoji 漂浮 + 角标） */
+        .cal-fx .fest-layer { position: absolute; inset: 0; display: none; }
+        .cal-fx .fest-tag {
+            position: absolute;
+            top: 14px;
+            right: 18px;
+            display: none;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.78);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+            font-size: 13px;
+            font-weight: 600;
+            color: #3a3a3c;
+            z-index: 2;
+        }
+
+        .cal-fx.festival .fest-layer,
+        .cal-fx.festival .fest-tag { display: flex; }
+        .cal-fx.festival .sky,
+        .cal-fx.festival .sun-orb,
+        .cal-fx.festival .horizon-glow { display: none; }
+
+        .cal-fx .fest-grad {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, var(--g1), var(--g2) 45%, var(--g3) 78%, var(--g4));
+            animation: festBreathe 12s ease-in-out infinite alternate;
+        }
+
+        @keyframes festBreathe {
+            0%   { transform: scale(1);    filter: brightness(1) saturate(1); }
+            100% { transform: scale(1.06); filter: brightness(1.07) saturate(1.12); }
+        }
+
+        .cal-fx .fest-grad::before {
+            content: "";
+            position: absolute;
+            width: 420px;
+            height: 420px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--acc1), transparent 70%);
+            top: -120px;
+            left: -100px;
+            filter: blur(28px);
+            opacity: 0.85;
+        }
+
+        .cal-fx .fest-grad::after {
+            content: "";
+            position: absolute;
+            width: 460px;
+            height: 460px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--acc2), transparent 70%);
+            bottom: -160px;
+            right: -120px;
+            filter: blur(32px);
+            opacity: 0.8;
+        }
+
+        .cal-fx .fest-mote {
+            position: absolute;
+            bottom: -40px;
+            opacity: 0;
+            animation: festFloat linear infinite;
+            user-select: none;
+        }
+
+        @keyframes festFloat {
+            0%   { transform: translateY(0) rotate(-10deg); opacity: 0; }
+            8%   { opacity: 0.95; }
+            85%  { opacity: 0.5; }
+            100% { transform: translateY(-640px) rotate(12deg); opacity: 0; }
+        }
+
+        /* 各节日主题配色（--g 渐变主体，--acc 光斑点缀） */
+        .fx-newyear    { --g1:#e8f1ff; --g2:#cfe3ff; --g3:#a8c8f8; --g4:#8fb8f0; --acc1:#ffd98a; --acc2:#ffb37a; }
+        .fx-spring     { --g1:#fff0e8; --g2:#ffd9c9; --g3:#ff9f85; --g4:#e85d4a; --acc1:#ffd98a; --acc2:#ff8a5c; }
+        .fx-lantern    { --g1:#fff2df; --g2:#ffdcb0; --g3:#ffab6e; --g4:#e8734a; --acc1:#fff3c9; --acc2:#ff9d5c; }
+        .fx-valentine  { --g1:#fff0f3; --g2:#ffd6e0; --g3:#ff9eb5; --g4:#f06d95; --acc1:#ff5c8a; --acc2:#ffc2d4; }
+        .fx-woman      { --g1:#fdf2f5; --g2:#f9dbe4; --g3:#f2aec4; --g4:#d97a9c; --acc1:#ff8fb0; --acc2:#b5e8c8; }
+        .fx-tree       { --g1:#eff7ee; --g2:#d9ecd2; --g3:#a8d5a0; --g4:#6faf6a; --acc1:#8fd08f; --acc2:#e8f0b8; }
+        .fx-qingming   { --g1:#eef4f0; --g2:#d9e8de; --g3:#aecdb8; --g4:#7da892; --acc1:#c2ddd0; --acc2:#e8f0ea; }
+        .fx-labor      { --g1:#fff9e8; --g2:#ffedbd; --g3:#ffd07a; --g4:#f0a44a; --acc1:#ffb347; --acc2:#9fd08f; }
+        .fx-youth      { --g1:#ffeef0; --g2:#ffd4d9; --g3:#ff9aa5; --g4:#e85a6a; --acc1:#ff6b7a; --acc2:#ffd98a; }
+        .fx-children   { --g1:#fffde8; --g2:#ffeede; --g3:#cdeaff; --g4:#ffe3f0; --acc1:#ffd166; --acc2:#7ac8f0; }
+        .fx-duanwu     { --g1:#f0f8e8; --g2:#dcefcb; --g3:#aed88a; --g4:#6faf5f; --acc1:#8fd08a; --acc2:#e0f0b8; }
+        .fx-qixi       { --g1:#202f6e; --g2:#3c4f9e; --g3:#6a6fc0; --g4:#9a7fc0; --acc1:#b8c4ff; --acc2:#e8c4ff; }
+        .fx-midautumn  { --g1:#1b2a5e; --g2:#2c4390; --g3:#4a6ab8; --g4:#8aa8d8; --acc1:#fff3c9; --acc2:#ffd98a; }
+        .fx-national   { --g1:#fff1e0; --g2:#ffdcc2; --g3:#ff9e6e; --g4:#e8503a; --acc1:#ffd98a; --acc2:#ff5c4a; }
+        .fx-chongyang  { --g1:#fff6e8; --g2:#ffe6c2; --g3:#f5b878; --g4:#d88a4a; --acc1:#ffb066; --acc2:#e8c88a; }
+        .fx-laba       { --g1:#fbf3e8; --g2:#f2dfc4; --g3:#d9ae7e; --g4:#b0784a; --acc1:#e8a866; --acc2:#f5d9a8; }
+        .fx-christmas  { --g1:#eaf5ff; --g2:#cfe8f8; --g3:#7fb0d8; --g4:#2f5f8a; --acc1:#e8483f; --acc2:#3f8f4f; }
+        .fx-teacher    { --g1:#fffbe8; --g2:#fff0bd; --g3:#ffd45c; --g4:#f0a83a; --acc1:#ffc94a; --acc2:#b5d8f0; }
+        .fx-army       { --g1:#eef5ee; --g2:#d8ecd8; --g3:#8fbf8f; --g4:#3f7a4a; --acc1:#e84a3f; --acc2:#c2d8c2; }
+        .fx-generic    { --g1:#e8f1ff; --g2:#cfe3ff; --g3:#8fb8f0; --g4:#5c8fd8; --acc1:#ffd98a; --acc2:#8ac4f0; }
+
         /* 滚动条美化 */
         ::-webkit-scrollbar {
             width: 6px;
@@ -887,8 +1485,22 @@
     <!-- ================= 左侧导航栏 ================= -->
     <aside class="sidebar">
         <div class="sidebar-header">
-            <div class="avatar">👤</div>
-            <span style="font-size: 18px; color: var(--text-secondary); cursor: pointer;">⚙️</span>
+            <div class="avatar-wrap">
+                <button class="avatar" id="avatarBtn" title="个人信息">👤</button>
+                <div class="user-menu" id="userMenu">
+                    <div class="user-menu-head">
+                        <div class="user-menu-avatar" id="menuAvatar">R</div>
+                        <div>
+                            <div class="user-menu-name" id="menuName">--</div>
+                            <div class="user-menu-role" id="menuRole">--</div>
+                        </div>
+                    </div>
+                    <button class="menu-item" id="profileMenuItem"><span>🧑‍💼</span>个人资料</button>
+                    <button class="menu-item" id="settingsMenuItem"><span>⚙️</span>设置</button>
+                    <button class="menu-item danger" id="logoutMenuItem"><span>⏻</span>退出登录</button>
+                </div>
+            </div>
+            <button class="gear-btn" id="settingsBtn" title="设置">⚙️</button>
         </div>
 
         <div class="search-box">
@@ -1006,6 +1618,16 @@
 
       <!-- ===== 日历视图 ===== -->
       <div id="calendarView">
+        <!-- 动效背景：日常=蓝色日出日落渐变；节日=自动切换对应主题插图 -->
+        <div class="cal-fx" id="calFx">
+            <div class="fx-scene">
+                <div class="sky"></div>
+                <div class="sun-orb"></div>
+                <div class="horizon-glow"></div>
+                <div class="fest-layer" id="festLayer"></div>
+            </div>
+            <div class="fest-tag" id="festTag"></div>
+        </div>
         <header class="top-header">
             <h1>日历</h1>
         </header>
@@ -1031,6 +1653,76 @@
         </div>
       </div>
     </main>
+
+    <!-- ================= 个人资料弹窗 ================= -->
+    <div class="modal-mask" id="profileModal">
+        <div class="modal">
+            <h3>个人资料</h3>
+            <div class="modal-sub">昵称与头像仅保存在本机浏览器中</div>
+            <div class="form-row">
+                <label class="form-label">头像</label>
+                <div class="avatar-picker" id="avatarPicker"></div>
+            </div>
+            <div class="form-row">
+                <label class="form-label">昵称</label>
+                <input type="text" class="form-input" id="nicknameInput" maxlength="20" placeholder="给自己起个昵称">
+            </div>
+            <div class="form-row">
+                <label class="form-label">账号</label>
+                <input type="text" class="form-input" id="profileUsername" readonly>
+            </div>
+            <div class="form-row">
+                <label class="form-label">角色</label>
+                <input type="text" class="form-input" id="profileRole" readonly>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-plain" id="profileCancel">取消</button>
+                <button class="btn-primary" id="profileSave">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= 设置弹窗 ================= -->
+    <div class="modal-mask" id="settingsModal">
+        <div class="modal">
+            <h3>设置</h3>
+            <div class="modal-sub">偏好设置自动保存，刷新后依然生效</div>
+            <div class="setting-row">
+                <div>
+                    <div class="setting-name">翻页秒针</div>
+                    <div class="setting-desc">关闭后时钟只显示时与分</div>
+                </div>
+                <button class="switch" id="swSeconds" aria-label="翻页秒针开关"></button>
+            </div>
+            <div class="setting-row">
+                <div>
+                    <div class="setting-name">英文时间栏</div>
+                    <div class="setting-desc">横幅右侧的英文日期与时间</div>
+                </div>
+                <button class="switch" id="swEnTime" aria-label="英文时间栏开关"></button>
+            </div>
+            <div class="setting-row">
+                <div>
+                    <div class="setting-name">日历动效背景</div>
+                    <div class="setting-desc">日常为渐变百叶窗动效，节日自动换主题插图</div>
+                </div>
+                <button class="switch" id="swCalFx" aria-label="日历动效背景开关"></button>
+            </div>
+            <div class="setting-row">
+                <div>
+                    <div class="setting-name">本地数据</div>
+                    <div class="setting-desc">清空后不可恢复，请谨慎操作</div>
+                </div>
+                <div style="display:flex; gap:8px;">
+                    <button class="btn-danger-plain" id="clearTasksBtn">清空任务</button>
+                    <button class="btn-danger-plain" id="clearMemosBtn">清空备忘录</button>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-primary" id="settingsClose">完成</button>
+            </div>
+        </div>
+    </div>
 
     <!-- ================= 交互逻辑脚本 ================= -->
     <script>
@@ -1656,6 +2348,397 @@
                 });
             }
         });
+
+        // ==========================================
+        // 7. 头像菜单 / 个人资料 / 设置面板 / 日历动效背景
+        // ==========================================
+
+        /* ---- 7.1 偏好设置（localStorage 持久化） ---- */
+        const WB_SETTINGS_KEY = 'wb_settings';
+        let wbSettings = Object.assign(
+            { showSeconds: true, showEnTime: true, calFx: true },
+            JSON.parse(localStorage.getItem(WB_SETTINGS_KEY) || '{}')
+        );
+
+        function saveWbSettings() {
+            localStorage.setItem(WB_SETTINGS_KEY, JSON.stringify(wbSettings));
+        }
+
+        function applyWbSettings() {
+            const unitS = document.getElementById('unitS');
+            if (unitS) unitS.style.display = wbSettings.showSeconds ? 'flex' : 'none';
+            const seps = document.querySelectorAll('#flipClock .flip-sep');
+            if (seps[1]) seps[1].style.display = wbSettings.showSeconds ? 'block' : 'none';
+
+            const enBar = document.querySelector('.banner-right');
+            if (enBar) enBar.style.display = wbSettings.showEnTime ? 'block' : 'none';
+
+            const fx = document.getElementById('calFx');
+            if (fx) fx.style.display = wbSettings.calFx ? 'block' : 'none';
+
+            // 同步开关 UI
+            [['swSeconds', 'showSeconds'], ['swEnTime', 'showEnTime'], ['swCalFx', 'calFx']].forEach(([id, key]) => {
+                const sw = document.getElementById(id);
+                if (sw) sw.classList.toggle('on', !!wbSettings[key]);
+            });
+        }
+
+        /* ---- 7.2 用户信息（登录时由登录页写入 localStorage.user） ---- */
+        const WB_PROFILE_KEY = 'wb_profile';
+        const AVATAR_OPTIONS = ['👤', '🦊', '🐼', '🚀', '🌟', '🍀', '🐱', '🤖'];
+
+        function getUserInfo() {
+            try { return JSON.parse(localStorage.getItem('user')) || {}; }
+            catch (e) { return {}; }
+        }
+
+        function getProfile() {
+            try { return JSON.parse(localStorage.getItem(WB_PROFILE_KEY)) || {}; }
+            catch (e) { return {}; }
+        }
+
+        function saveProfile(p) {
+            localStorage.setItem(WB_PROFILE_KEY, JSON.stringify(p));
+        }
+
+        /** 用当前账号/资料刷新侧边栏头像与菜单头部 */
+        function renderUserDisplay() {
+            const u = getUserInfo();
+            const p = getProfile();
+            const username = u.username || 'ruan';
+            const nickname = p.nickname || username;
+            const avatar = p.avatar || '👤';
+
+            const avatarBtn = document.getElementById('avatarBtn');
+            avatarBtn.textContent = avatar;
+            avatarBtn.title = nickname + ' · 个人信息';
+
+            document.getElementById('menuAvatar').textContent =
+                avatar === '👤' ? username.charAt(0).toUpperCase() : avatar;
+            document.getElementById('menuName').textContent = nickname;
+            document.getElementById('menuRole').textContent =
+                (u.role === 'admin' ? '管理员' : '成员') + ' · ' + username;
+        }
+
+        /* ---- 7.3 头像菜单开关 ---- */
+        const userMenu = document.getElementById('userMenu');
+
+        function toggleUserMenu(open) {
+            userMenu.classList.toggle('open', open);
+        }
+
+        document.getElementById('avatarBtn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleUserMenu(!userMenu.classList.contains('open'));
+        });
+
+        document.addEventListener('click', (e) => {
+            if (userMenu.classList.contains('open') && !userMenu.contains(e.target)) {
+                toggleUserMenu(false);
+            }
+        });
+
+        /* ---- 7.4 通用弹窗开关 ---- */
+        function openModal(id) { document.getElementById(id).classList.add('open'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+        document.querySelectorAll('.modal-mask').forEach(mask => {
+            mask.addEventListener('click', (e) => {
+                if (e.target === mask) mask.classList.remove('open');
+            });
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-mask.open').forEach(m => m.classList.remove('open'));
+                toggleUserMenu(false);
+            }
+        });
+
+        /* ---- 7.5 个人资料弹窗 ---- */
+        let pickedAvatar = '👤';
+
+        function openProfileModal() {
+            const u = getUserInfo();
+            const p = getProfile();
+            pickedAvatar = p.avatar || '👤';
+
+            document.getElementById('nicknameInput').value = p.nickname || '';
+            document.getElementById('profileUsername').value = u.username || 'ruan';
+            document.getElementById('profileRole').value = u.role === 'admin' ? '管理员' : '成员';
+
+            const picker = document.getElementById('avatarPicker');
+            picker.innerHTML = '';
+            AVATAR_OPTIONS.forEach(opt => {
+                const b = document.createElement('button');
+                b.type = 'button';
+                b.className = 'avatar-option' + (opt === pickedAvatar ? ' selected' : '');
+                b.textContent = opt;
+                b.addEventListener('click', () => {
+                    pickedAvatar = opt;
+                    picker.querySelectorAll('.avatar-option').forEach(x => x.classList.remove('selected'));
+                    b.classList.add('selected');
+                });
+                picker.appendChild(b);
+            });
+
+            toggleUserMenu(false);
+            openModal('profileModal');
+        }
+
+        document.getElementById('profileSave').addEventListener('click', () => {
+            saveProfile({
+                nickname: document.getElementById('nicknameInput').value.trim(),
+                avatar: pickedAvatar
+            });
+            renderUserDisplay();
+            closeModal('profileModal');
+            showToast('个人资料已保存');
+        });
+        document.getElementById('profileCancel').addEventListener('click', () => closeModal('profileModal'));
+
+        /* ---- 7.6 设置弹窗 ---- */
+        function openSettingsModal() {
+            applyWbSettings();
+            toggleUserMenu(false);
+            openModal('settingsModal');
+        }
+
+        [['swSeconds', 'showSeconds'], ['swEnTime', 'showEnTime'], ['swCalFx', 'calFx']].forEach(([id, key]) => {
+            document.getElementById(id).addEventListener('click', () => {
+                wbSettings[key] = !wbSettings[key];
+                saveWbSettings();
+                applyWbSettings();
+            });
+        });
+
+        document.getElementById('settingsClose').addEventListener('click', () => closeModal('settingsModal'));
+
+        document.getElementById('clearTasksBtn').addEventListener('click', (e) => {
+            if (!e.target.dataset.confirmed) {
+                e.target.dataset.confirmed = '1';
+                e.target.textContent = '再点一次确认';
+                setTimeout(() => { e.target.dataset.confirmed = ''; e.target.textContent = '清空任务'; }, 2500);
+                return;
+            }
+            tasks = [];
+            localStorage.setItem('wb_tasks', '[]');
+            renderTasks();
+            e.target.dataset.confirmed = '';
+            e.target.textContent = '清空任务';
+            showToast('任务已清空');
+        });
+
+        document.getElementById('clearMemosBtn').addEventListener('click', (e) => {
+            if (!e.target.dataset.confirmed) {
+                e.target.dataset.confirmed = '1';
+                e.target.textContent = '再点一次确认';
+                setTimeout(() => { e.target.dataset.confirmed = ''; e.target.textContent = '清空备忘录'; }, 2500);
+                return;
+            }
+            memos = [];
+            localStorage.setItem('wb_memos', '[]');
+            renderMemos();
+            e.target.dataset.confirmed = '';
+            e.target.textContent = '清空备忘录';
+            showToast('备忘录已清空');
+        });
+
+        /* ---- 7.7 入口绑定 ---- */
+        document.getElementById('settingsBtn').addEventListener('click', openSettingsModal);
+        document.getElementById('settingsMenuItem').addEventListener('click', openSettingsModal);
+        document.getElementById('profileMenuItem').addEventListener('click', openProfileModal);
+
+        document.getElementById('logoutMenuItem').addEventListener('click', () => {
+            if (window.WBAuth) WBAuth.logout();
+            window.location.href = 'index.html';
+        });
+
+        /* ---- 7.8 日历页动效背景 ----
+           日常：蓝色日出日落渐变天空（CSS 自动循环，无需 JS）；
+           节日：自动检测今天撞上哪个节日/节气，切换成对应主题插图。 */
+        function getTodayFestival(date) {
+            const key = (date.getMonth() + 1) + '-' + date.getDate();
+            if (SOLAR_FEST[key]) return SOLAR_FEST[key];
+            const l = solarToLunar(date);
+            if (!l.isLeap && LUNAR_FEST[l.month + '-' + l.day]) return LUNAR_FEST[l.month + '-' + l.day];
+            if (termOfDay(date) === '清明') return '清明';
+            return null;
+        }
+
+        /* 节日主题表：cls=配色场景，tag+greet=右上角角标，emojis=漂浮装饰 */
+        const FEST_THEMES = {
+            '元旦':   { cls: 'fx-newyear',   tag: '🎉', greet: '元旦快乐',   emojis: ['🎉', '🎊', '✨', '🌟', '🎈'] },
+            '春节':   { cls: 'fx-spring',    tag: '🧨', greet: '新春大吉',   emojis: ['🧨', '🏮', '🧧', '🎊', '🍊'] },
+            '元宵节': { cls: 'fx-lantern',   tag: '🏮', greet: '元宵快乐',   emojis: ['🏮', '🌕', '✨', '🐉', '🎊'] },
+            '情人节': { cls: 'fx-valentine', tag: '💝', greet: '情人节快乐', emojis: ['💗', '🌹', '💝', '💌'] },
+            '妇女节': { cls: 'fx-woman',     tag: '🌷', greet: '女神节快乐', emojis: ['🌷', '💐', '🌸', '💖'] },
+            '植树节': { cls: 'fx-tree',      tag: '🌱', greet: '植树节',     emojis: ['🌱', '🌳', '☘️', '🌲'] },
+            '清明':   { cls: 'fx-qingming',  tag: '🌿', greet: '清明时节',   emojis: ['🌿', '🌱', '🍃', '☔'] },
+            '劳动节': { cls: 'fx-labor',     tag: '🛠️', greet: '劳动节快乐', emojis: ['🛠️', '🌼', '🌻', '🧹'] },
+            '青年节': { cls: 'fx-youth',     tag: '🔥', greet: '青年节',     emojis: ['🔥', '⭐', '🚩', '✨'] },
+            '儿童节': { cls: 'fx-children',  tag: '🎈', greet: '儿童节快乐', emojis: ['🎈', '🪁', '🍭', '🎠', '🧸'] },
+            '端午节': { cls: 'fx-duanwu',    tag: '🥟', greet: '端午安康',   emojis: ['🥟', '🍃', '🐉', '🎋'] },
+            '七夕':   { cls: 'fx-qixi',      tag: '💞', greet: '七夕快乐',   emojis: ['💞', '🌌', '⭐', '🦢', '💫'] },
+            '中秋节': { cls: 'fx-midautumn', tag: '🥮', greet: '中秋团圆',   emojis: ['🌕', '🥮', '🏮', '🐇', '✨'] },
+            '国庆节': { cls: 'fx-national',  tag: '🎊', greet: '国庆快乐',   emojis: ['🎊', '🎆', '🏮', '⭐', '🎇'] },
+            '重阳节': { cls: 'fx-chongyang', tag: '🌼', greet: '重阳安康',   emojis: ['🌼', '🍂', '⛰️', '🍵'] },
+            '腊八节': { cls: 'fx-laba',      tag: '🥣', greet: '腊八快乐',   emojis: ['🥣', '🌾', '🌰', '🔥'] },
+            '圣诞节': { cls: 'fx-christmas', tag: '🎄', greet: '圣诞快乐',   emojis: ['🎄', '⭐', '🎁', '🔔', '❄️'] },
+            '教师节': { cls: 'fx-teacher',   tag: '🌻', greet: '教师节快乐', emojis: ['🌻', '📖', '✏️', '🌸'] },
+            '建党节': { cls: 'fx-national',  tag: '🚩', greet: '建党节',     emojis: ['🚩', '⭐', '🎆', '✨'] },
+            '建军节': { cls: 'fx-army',      tag: '🎖️', greet: '建军节',     emojis: ['🎖️', '⭐', '🚩', '🛡️'] }
+        };
+
+        /* GradientBlinds 配置（对应 ReactBits 组件参数） */
+        const GB_CONFIG = {
+            gradientColors: ['#FF9FFC', '#5227FF'],
+            angle: 20,
+            blindCount: 16,
+            blindMinWidth: 60,
+            spotlightRadius: 0.5,
+            shine: 0.4,
+            relief: 0.5,
+            glow: 0.4,
+            sway: 0.35,
+            hoverTilt: 0.6,
+            clickEffect: 'ripple',
+            noise: 0.3
+        };
+
+        function buildGradientBlinds() {
+            const fx = document.getElementById('calFx');
+            if (!fx || document.getElementById('gbRoot')) return;
+            fx.classList.add('has-gb');
+
+            const c = GB_CONFIG;
+            const root = document.createElement('div');
+            root.className = 'gb-root';
+            root.id = 'gbRoot';
+            root.style.cssText =
+                `--c1:${c.gradientColors[0]};--c2:${c.gradientColors[1]};` +
+                `--gb-angle:${c.angle}deg;--sway:${c.sway};--shine:${c.shine};` +
+                `--glow:${c.glow};--sr:${c.spotlightRadius};--noise:${c.noise};`;
+            root.innerHTML =
+                '<div class="gb-glowlayer"></div>' +
+                '<div class="gb-persp"><div class="gb-stage-wrap" id="gbTilt"><div class="gb-stage" id="gbStage"></div></div></div>' +
+                '<div class="gb-shine"></div>' +
+                '<div class="gb-spot" id="gbSpot"></div>' +
+                '<div class="gb-ripple-layer" id="gbRipples"></div>' +
+                '<div class="gb-noise"></div>';
+            fx.querySelector('.fx-scene').appendChild(root);
+            rebuildBlinds();
+        }
+
+        function rebuildBlinds() {
+            const stage = document.getElementById('gbStage');
+            if (!stage) return;
+            const c = GB_CONFIG;
+            const w = stage.clientWidth || 1200;
+            const bw = Math.max(c.blindMinWidth, w / c.blindCount);
+            const n = Math.ceil(w / bw) + 2;
+            stage.innerHTML = '';
+            const darkA = (0.18 * c.relief).toFixed(2);
+            const lightA = (0.12 * c.relief).toFixed(2);
+            const edge = Math.max(1, Math.round(3 * c.relief));
+            for (let i = 0; i < n; i++) {
+                const b = document.createElement('div');
+                b.className = 'gb-blind';
+                b.style.flex = `0 0 ${bw.toFixed(1)}px`;
+                b.style.boxShadow =
+                    `inset ${edge}px 0 6px rgba(0,0,0,${darkA}), inset -${edge}px 0 6px rgba(255,255,255,${lightA})`;
+                b.style.animationDelay = `${(-i * 0.45).toFixed(2)}s, ${(-i * 0.3).toFixed(2)}s`;
+                stage.appendChild(b);
+            }
+        }
+
+        /* 日历页鼠标交互：聚光灯跟随 + 悬停倾斜 + 点击涟漪（背景层 pointer-events:none，事件挂在视图上） */
+        (function bindCalFxEvents() {
+            const calView = document.getElementById('calendarView');
+            if (!calView) return;
+
+            calView.addEventListener('mousemove', (e) => {
+                const r = calView.getBoundingClientRect();
+                const x = ((e.clientX - r.left) / r.width * 100).toFixed(2);
+                const y = ((e.clientY - r.top) / r.height * 100).toFixed(2);
+                const spot = document.getElementById('gbSpot');
+                if (spot) {
+                    spot.style.setProperty('--mx', x + '%');
+                    spot.style.setProperty('--my', y + '%');
+                }
+                const tilt = document.getElementById('gbTilt');
+                if (tilt) {
+                    const nx = (e.clientX - r.left) / r.width - 0.5;
+                    const ny = (e.clientY - r.top) / r.height - 0.5;
+                    tilt.style.transform =
+                        `rotateY(${(nx * 10 * GB_CONFIG.hoverTilt).toFixed(2)}deg) ` +
+                        `rotateX(${(-ny * 10 * GB_CONFIG.hoverTilt).toFixed(2)}deg)`;
+                }
+            });
+
+            calView.addEventListener('mouseleave', () => {
+                const tilt = document.getElementById('gbTilt');
+                if (tilt) tilt.style.transform = '';
+            });
+
+            if (GB_CONFIG.clickEffect === 'ripple') {
+                calView.addEventListener('click', (e) => {
+                    const ripples = document.getElementById('gbRipples');
+                    if (!ripples) return;
+                    const r = calView.getBoundingClientRect();
+                    const s = document.createElement('div');
+                    s.className = 'gb-ripple';
+                    s.style.left = (e.clientX - r.left) + 'px';
+                    s.style.top = (e.clientY - r.top) + 'px';
+                    ripples.appendChild(s);
+                    s.addEventListener('animationend', () => s.remove());
+                });
+            }
+
+            let resizeTimer = null;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(rebuildBlinds, 200);
+            });
+        })();
+
+        function initCalFx() {
+            const fx = document.getElementById('calFx');
+            if (!fx) return;
+
+            const name = getTodayFestival(new Date());
+            const theme = name ? FEST_THEMES[name] : null;
+            if (!theme) {          // 日常 → GradientBlinds 渐变百叶窗背景
+                buildGradientBlinds();
+                return;
+            }
+
+            fx.classList.add('festival', theme.cls);
+            document.getElementById('festTag').innerHTML =
+                '<span>' + theme.tag + '</span>' + name + ' · ' + theme.greet;
+
+            const layer = document.getElementById('festLayer');
+            const grad = document.createElement('div');
+            grad.className = 'fest-grad';
+            layer.appendChild(grad);
+
+            for (let i = 0; i < 14; i++) {
+                const mote = document.createElement('div');
+                mote.className = 'fest-mote';
+                const dur = 10 + Math.random() * 12;
+                mote.style.cssText =
+                    `left:${(Math.random() * 94 + 3).toFixed(1)}%;` +
+                    `font-size:${Math.round(14 + Math.random() * 18)}px;` +
+                    `animation-duration:${dur.toFixed(1)}s;` +
+                    `animation-delay:${(-Math.random() * 20).toFixed(1)}s;`;
+                mote.textContent = theme.emojis[i % theme.emojis.length];
+                layer.appendChild(mote);
+            }
+        }
+
+        /* ---- 7.9 初始化 ---- */
+        renderUserDisplay();
+        applyWbSettings();
+        initCalFx();
     </script>
 
     <!-- 保留原有的刷新守卫 -->
